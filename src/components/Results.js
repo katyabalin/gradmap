@@ -1,26 +1,48 @@
 import React from 'react';
 import './Results.css';
 
-function PlaceCard({ place }) {
-  const name = place.name;
-  const address = place.location?.formatted_address || place.location?.address || '';
-  const category = place.categories?.[0]?.name || '';
-
-  return (
-    <div className="place-card">
-      <div className="place-name">{name}</div>
-      <div className="place-meta">{category}{address ? ` · ${address}` : ''}</div>
-    </div>
-  );
-}
-
 function Results({ results }) {
-  const { salary, city, takeHome, places, aiSummary } = results;
+  const { salary, city, takeHome, aiSummary } = results;
+  const citySlug = city.split(',')[0].toLowerCase().replace(/ /g, '-');
+  const stateSlug = (city.split(', ')[1] || '').toLowerCase();
+
+  const housingLinks = [
+    {
+      name: 'Zillow',
+      desc: 'Large inventory, great filters, save favorites',
+      url: 'https://www.zillow.com/homes/for_rent/' + city.replace(/, /g, '-').replace(/ /g, '-') + '_rb/?price=0,' + takeHome.maxRent,
+    },
+    {
+      name: 'Apartments.com',
+      desc: 'Best for verified listings and virtual tours',
+      url: 'https://www.apartments.com/' + citySlug + '-' + stateSlug + '/?max-price=' + takeHome.maxRent,
+    },
+    {
+      name: 'Craigslist',
+      desc: 'Best deals, sublets, and roommate listings',
+      url: 'https://www.craigslist.org/search/apa?query=' + encodeURIComponent(city) + '&max_price=' + takeHome.maxRent,
+    },
+    {
+      name: 'Facebook Marketplace',
+      desc: 'Direct from landlords, often no broker fee',
+      url: 'https://www.facebook.com/marketplace/category/propertyrentals/',
+    },
+  ];
+
+  const nearbyCategories = [
+    { label: '🍜 Restaurants', search: 'restaurants in ' + city },
+    { label: '☕ Cafes', search: 'coffee shops in ' + city },
+    { label: '💪 Gyms', search: 'gyms in ' + city },
+    { label: '🌳 Parks', search: 'parks in ' + city },
+    { label: '🛒 Grocery', search: 'grocery stores in ' + city },
+    { label: '🎉 Nightlife', search: 'bars nightlife in ' + city },
+    { label: '🏥 Healthcare', search: 'urgent care clinics in ' + city },
+    { label: '🚇 Transit', search: 'public transit ' + city },
+  ];
 
   return (
     <div className="results">
 
-      {/* Pay breakdown */}
       <div className="results-section">
         <div className="section-label">✦ Your Money</div>
         <div className="pay-cards">
@@ -43,7 +65,6 @@ function Results({ results }) {
         </div>
       </div>
 
-      {/* AI Summary */}
       {aiSummary && (
         <div className="results-section">
           <div className="section-label">✦ Your Life in {city}</div>
@@ -54,24 +75,43 @@ function Results({ results }) {
         </div>
       )}
 
-      {/* Places */}
+      <div className="results-section">
+        <div className="section-label">✦ Find Apartments</div>
+        <p className="housing-intro">
+          Browse real listings in {city} filtered to your budget (under ${takeHome.maxRent.toLocaleString()}/mo):
+        </p>
+        <div className="housing-links">
+          {housingLinks.map(function(link) {
+            return (
+              <a key={link.name} className="housing-link" href={link.url} target="_blank" rel="noreferrer">
+                <div>
+                  <div className="housing-link-name">{link.name}</div>
+                  <div className="housing-link-desc">{link.desc}</div>
+                </div>
+                <div className="housing-link-arrow">&#8594;</div>
+              </a>
+            );
+          })}
+        </div>
+      </div>
+
       <div className="results-section">
         <div className="section-label">✦ What's Nearby</div>
         <div className="places-grid">
-          {[
-            { label: '🍜 Restaurants', items: places.restaurants },
-            { label: '☕ Cafes', items: places.cafes },
-            { label: '💪 Gyms', items: places.gyms },
-            { label: '🌳 Parks', items: places.parks },
-          ].map(({ label, items }) => (
-            <div key={label} className="places-col">
-              <div className="places-col-title">{label}</div>
-              {items.length > 0
-                ? items.map((p, i) => <PlaceCard key={i} place={p} />)
-                : <div className="places-empty">No results found</div>
-              }
-            </div>
-          ))}
+          {nearbyCategories.map(function(item) {
+            return (
+              <a
+                key={item.label}
+                className="nearby-card"
+                href={'https://www.google.com/maps/search/' + encodeURIComponent(item.search)}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <div className="nearby-label">{item.label}</div>
+                <div className="nearby-action">Search on Google Maps</div>
+              </a>
+            );
+          })}
         </div>
       </div>
 
