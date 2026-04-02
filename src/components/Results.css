@@ -1,0 +1,139 @@
+.results { margin-top: 2.5rem; animation: fadeUp 0.4s ease; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.results-section { margin-bottom: 2rem; }
+
+.section-label {
+  font-size: 0.7rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #16a34a;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Pay cards */
+.pay-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 640px) { .pay-cards { grid-template-columns: repeat(2, 1fr); } }
+
+.pay-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.pay-card-highlight {
+  background: #111827;
+  border-color: #111827;
+}
+
+.pay-card-highlight .pay-label { color: #6b7280; }
+.pay-card-highlight .pay-value { color: #16a34a; }
+
+.pay-label {
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #9ca3af;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.pay-value {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+/* AI box */
+.ai-box {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-top: 3px solid #16a34a;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.ai-label {
+  font-size: 0.65rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #16a34a;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.ai-text {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: #374151;
+  font-weight: 300;
+}
+
+/* Places */
+.places-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 768px) { .places-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.places-col {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.places-col-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.75rem;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.place-card {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f9fafb;
+}
+
+.place-card:last-child { border-bottom: none; }
+
+.place-name {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 0.15rem;
+}
+
+.place-meta {
+  font-size: 0.72rem;
+  color: #9ca3af;
+  font-weight: 300;
+}
+
+.places-empty {
+  font-size: 0.8rem;
+  color: #d1d5db;
+  font-style: italic;
+}
