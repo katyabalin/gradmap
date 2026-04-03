@@ -3,7 +3,7 @@ import './Results.css';
 
 
 function Results({ results }) {
-  const { salary, city, takeHome, summary, neighborhoods, cityStats } = results;
+  const { salary, city, takeHome, summary, cityStats } = results;
   const citySlug = city.split(',')[0].toLowerCase().replace(/ /g, '-');
   const stateSlug = (city.split(', ')[1] || '').toLowerCase();
 
