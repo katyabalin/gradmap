@@ -1,8 +1,9 @@
 import React from 'react';
 import './Results.css';
 
+
 function Results({ results }) {
-  const { salary, city, takeHome, aiSummary } = results;
+  const { salary, city, takeHome, summary, neighborhoods, cityStats } = results;
   const citySlug = city.split(',')[0].toLowerCase().replace(/ /g, '-');
   const stateSlug = (city.split(', ')[1] || '').toLowerCase();
 
@@ -65,12 +66,81 @@ function Results({ results }) {
         </div>
       </div>
 
-      {aiSummary && (
+
+        {/* City Snapshot */}
+{cityStats && (
+  <div className="results-section">
+    <div className="section-label">✦ City Snapshot</div>
+    <div className="snapshot-grid">
+      <div className="snapshot-card">
+        <div className="snapshot-label">Population</div>
+        <div className="snapshot-value">{(cityStats.totalPop / 1000000).toFixed(1)}M</div>
+      </div>
+      <div className="snapshot-card">
+        <div className="snapshot-label">Median Age</div>
+        <div className="snapshot-value">{cityStats.medianAge}</div>
+      </div>
+      <div className="snapshot-card">
+        <div className="snapshot-label">Ages 20–34</div>
+        <div className="snapshot-value">{cityStats.youngAdultPct}%</div>
+        <div className="snapshot-sub">of residents</div>
+      </div>
+      <div className="snapshot-card">
+        <div className="snapshot-label">Diversity</div>
+        <div className="snapshot-diversity">
+          <div className="div-row">
+            <span className="div-label">White</span>
+            <div className="div-bar-wrap">
+              <div className="div-bar" style={{ width: cityStats.diversity.white + '%' }} />
+            </div>
+            <span className="div-pct">{cityStats.diversity.white}%</span>
+          </div>
+          <div className="div-row">
+            <span className="div-label">Black</span>
+            <div className="div-bar-wrap">
+              <div className="div-bar div-bar-2" style={{ width: cityStats.diversity.black + '%' }} />
+            </div>
+            <span className="div-pct">{cityStats.diversity.black}%</span>
+          </div>
+          <div className="div-row">
+            <span className="div-label">Asian</span>
+            <div className="div-bar-wrap">
+              <div className="div-bar div-bar-3" style={{ width: cityStats.diversity.asian + '%' }} />
+            </div>
+            <span className="div-pct">{cityStats.diversity.asian}%</span>
+          </div>
+          <div className="div-row">
+            <span className="div-label">Hispanic</span>
+            <div className="div-bar-wrap">
+              <div className="div-bar div-bar-4" style={{ width: cityStats.diversity.hispanic + '%' }} />
+            </div>
+            <span className="div-pct">{cityStats.diversity.hispanic}%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+{/* Meetup link */}
+<a className="meetup-link" href={'https://www.meetup.com/find/?suggested=true&location=' + encodeURIComponent(city.split(',')[0])} target="_blank" rel="noreferrer">  <div className="meetup-left">
+    <div className="meetup-title">🎉 Find Your Community</div>
+    <div className="meetup-desc">Browse local meetups, events, and groups for new residents in {city}</div>
+  </div>
+  <div className="meetup-arrow">&#8594;</div>
+</a>
+  </div>
+)}
+
+
+
+
+
+
+      {summary && (
         <div className="results-section">
           <div className="section-label">✦ Your Life in {city}</div>
           <div className="ai-box">
             <div className="ai-label">AI City Analysis</div>
-            <div className="ai-text">{aiSummary}</div>
+            <div className="ai-text">{summary}</div>
           </div>
         </div>
       )}

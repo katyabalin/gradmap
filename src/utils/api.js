@@ -1,6 +1,7 @@
 
 const RENTCAST_KEY = process.env.REACT_APP_RENTCAST_API_KEY;
 
+
 // Calculate take-home pay
 export function calculateTakeHome(salary, city) {
   const federal = salary * 0.22;
@@ -10,6 +11,67 @@ export function calculateTakeHome(salary, city) {
   const monthly = Math.round(annual / 12);
   const maxRent = Math.round(monthly * 0.3);
   return { annual: Math.round(annual), monthly, maxRent };
+}
+
+// Get city demographics from Census API
+export async function getCityStats(city) {
+  const CENSUS_KEY = process.env.REACT_APP_CENSUS_API_KEY;
+
+  const cityMap = {
+    'New York, NY': { place: '51000', state: '36' },
+    'San Francisco, CA': { place: '67000', state: '06' },
+    'Los Angeles, CA': { place: '44000', state: '06' },
+    'Chicago, IL': { place: '14000', state: '17' },
+    'Seattle, WA': { place: '63000', state: '53' },
+    'Austin, TX': { place: '05000', state: '48' },
+    'Boston, MA': { place: '07000', state: '25' },
+    'Washington, DC': { place: '50000', state: '11' },
+    'Miami, FL': { place: '45000', state: '12' },
+    'Denver, CO': { place: '20000', state: '08' },
+    'Atlanta, GA': { place: '04000', state: '13' },
+    'Nashville, TN': { place: '52006', state: '47' },
+  };
+
+  const location = cityMap[city];
+  if (!location) return null;
+
+  try {
+    const url = `https://api.census.gov/data/2022/acs/acs5?get=B01003_001E,B01002_001E,B02001_002E,B02001_003E,B02001_004E,B02001_005E,B02001_006E,B03003_003E,B01001_007E,B01001_008E,B01001_009E,B01001_010E,B01001_011E,B01001_012E,B01001_031E,B01001_032E,B01001_033E,B01001_034E,B01001_035E,B01001_036E&for=place:${location.place}&in=state:${location.state}&key=${CENSUS_KEY}`;
+
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const data = await res.json();
+    const row = data[1];
+
+    const totalPop = parseInt(row[0]);
+    const medianAge = parseFloat(row[1]);
+    const white = parseInt(row[2]);
+    const black = parseInt(row[3]);
+    const native = parseInt(row[4]);
+    const asian = parseInt(row[5]);
+    const pacific = parseInt(row[6]);
+    const hispanic = parseInt(row[7]);
+
+    // Ages 20-34 male + female
+    const youngAdults = [row[8],row[9],row[10],row[11],row[12],row[13],
+      row[14],row[15],row[16],row[17],row[18],row[19]]
+      .reduce((a, b) => a + parseInt(b || 0), 0);
+
+    return {
+      totalPop,
+      medianAge,
+      youngAdultPct: Math.round((youngAdults / totalPop) * 100),
+      diversity: {
+        white: Math.round((white / totalPop) * 100),
+        black: Math.round((black / totalPop) * 100),
+        asian: Math.round((asian / totalPop) * 100),
+        hispanic: Math.round((hispanic / totalPop) * 100),
+        other: Math.round(((native + pacific) / totalPop) * 100),
+      },
+    };
+  } catch {
+    return null;
+  }
 }
 
 // Get places from OpenStreetMap (no API key needed)
@@ -142,23 +204,18 @@ Be specific to ${city}. Be honest. Be encouraging but realistic.`;
 export async function analyzeCity({ salary, city, vibe }) {
   const takeHome = calculateTakeHome(salary, city);
 
-  const [restaurants, cafes, gyms, parks, rentals] = await Promise.all([
-    getPlaces(city, 'restaurants'),
-    getPlaces(city, 'cafes'),
-    getPlaces(city, 'gyms'),
-    getPlaces(city, 'parks'),
-    getRentals(city, takeHome.maxRent),
+  const [aiResult, cityStats] = await Promise.all([
+    generateAISummary(salary, city, vibe, takeHome),
+    getCityStats(city),
   ]);
-
-  const aiSummary = await generateAISummary(salary, city, vibe, takeHome);
 
   return {
     salary,
     city,
     vibe,
     takeHome,
-    places: { restaurants, cafes, gyms, parks },
-    rentals,
-    aiSummary,
+    summary: aiResult?.summary || null,
+    neighborhoods: aiResult?.neighborhoods || [],
+    cityStats,
   };
 }

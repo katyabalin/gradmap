@@ -182,3 +182,127 @@
   color: #16a34a;
   font-weight: 500;
 }
+
+/* City Snapshot */
+.snapshot-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 2fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) { .snapshot-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.snapshot-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.snapshot-label {
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #9ca3af;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.snapshot-value {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.snapshot-sub {
+  font-size: 0.7rem;
+  color: #9ca3af;
+  margin-top: 0.2rem;
+}
+
+/* Diversity bars */
+.snapshot-diversity {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.div-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.div-label {
+  font-size: 0.72rem;
+  color: #6b7280;
+  min-width: 52px;
+  font-weight: 400;
+}
+
+.div-bar-wrap {
+  flex: 1;
+  height: 6px;
+  background: #f3f4f6;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.div-bar {
+  height: 100%;
+  background: #111827;
+  border-radius: 3px;
+  transition: width 0.6s ease;
+}
+
+.div-bar-2 { background: #16a34a; }
+.div-bar-3 { background: #388bfd; }
+.div-bar-4 { background: #f59e0b; }
+
+.div-pct {
+  font-size: 0.72rem;
+  color: #6b7280;
+  min-width: 28px;
+  text-align: right;
+}
+
+/* Meetup link */
+.meetup-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-left: 3px solid #16a34a;
+  border-radius: 10px;
+  padding: 1.25rem;
+  text-decoration: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  transition: box-shadow 0.2s;
+}
+
+.meetup-link:hover { box-shadow: 0 4px 12px rgba(22,163,74,0.1); }
+
+.meetup-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.2rem;
+}
+
+.meetup-desc {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  font-weight: 300;
+}
+
+.meetup-arrow {
+  color: #16a34a;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
