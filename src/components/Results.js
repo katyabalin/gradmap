@@ -120,8 +120,12 @@ function Results({ results }) {
       </div>
     </div>
 
+
+
+
 {/* Meetup link */}
-<a className="meetup-link" href={'https://www.meetup.com/find/?suggested=true&location=' + encodeURIComponent(city.split(',')[0])} target="_blank" rel="noreferrer">  <div className="meetup-left">
+<a className="meetup-link" href={({'New York, NY': 'https://www.meetup.com/cities/us/ny/new_york/', 'San Francisco, CA': 'https://www.meetup.com/cities/us/ca/san_francisco/', 'Los Angeles, CA': 'https://www.meetup.com/cities/us/ca/los_angeles/', 'Chicago, IL': 'https://www.meetup.com/cities/us/il/chicago/', 'Seattle, WA': 'https://www.meetup.com/cities/us/wa/seattle/', 'Austin, TX': 'https://www.meetup.com/cities/us/tx/austin/', 'Boston, MA': 'https://www.meetup.com/cities/us/ma/boston/', 'Washington, DC': 'https://www.meetup.com/cities/us/dc/washington/', 'Miami, FL': 'https://www.meetup.com/cities/us/fl/miami/', 'Denver, CO': 'https://www.meetup.com/cities/us/co/denver/', 'Atlanta, GA': 'https://www.meetup.com/cities/us/ga/atlanta/', 'Nashville, TN': 'https://www.meetup.com/cities/us/tn/nashville/'})[city] || 'https://www.meetup.com/find/'} target="_blank" rel="noreferrer">
+  <div className="meetup-left">
     <div className="meetup-title">🎉 Find Your Community</div>
     <div className="meetup-desc">Browse local meetups, events, and groups for new residents in {city}</div>
   </div>
