@@ -16,7 +16,6 @@ export function calculateTakeHome(salary, city) {
 // Get city demographics from Census API
 export async function getCityStats(city) {
   const CENSUS_KEY = process.env.REACT_APP_CENSUS_API_KEY;
-
   const cityMap = {
     'New York, NY': { place: '51000', state: '36' },
     'San Francisco, CA': { place: '67000', state: '06' },
@@ -35,12 +34,17 @@ export async function getCityStats(city) {
   const location = cityMap[city];
   if (!location) return null;
 
-  try {
-    const url = `https://api.census.gov/data/2022/acs/acs5?get=B01003_001E,B01002_001E,B02001_002E,B02001_003E,B02001_004E,B02001_005E,B02001_006E,B03003_003E,B01001_007E,B01001_008E,B01001_009E,B01001_010E,B01001_011E,B01001_012E,B01001_031E,B01001_032E,B01001_033E,B01001_034E,B01001_035E,B01001_036E&for=place:${location.place}&in=state:${location.state}&key=${CENSUS_KEY}`;
+  const censusUrl = `https://api.census.gov/data/2022/acs/acs5?get=B01003_001E,B01002_001E,B02001_002E,B02001_003E,B02001_004E,B02001_005E,B02001_006E,B03003_003E,B01001_007E,B01001_008E,B01001_009E,B01001_010E,B01001_011E,B01001_012E,B01001_031E,B01001_032E,B01001_033E,B01001_034E,B01001_035E,B01001_036E&for=place:${location.place}&in=state:${location.state}&key=${CENSUS_KEY}`;
 
-    const res = await fetch(url);
+  try {
+    const res = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'census', censusUrl }),
+    });
     if (!res.ok) return null;
-    const data = await res.json();
+    const json = await res.json();
+    const data = json.data;
     const row = data[1];
 
     const totalPop = parseInt(row[0]);
@@ -52,7 +56,6 @@ export async function getCityStats(city) {
     const pacific = parseInt(row[6]);
     const hispanic = parseInt(row[7]);
 
-    // Ages 20-34 male + female
     const youngAdults = [row[8],row[9],row[10],row[11],row[12],row[13],
       row[14],row[15],row[16],row[17],row[18],row[19]]
       .reduce((a, b) => a + parseInt(b || 0), 0);
@@ -160,7 +163,6 @@ export async function getRentals(city, maxRent) {
   }
 }
 
-// Generate AI summary
 async function generateAISummary(salary, city, vibe, takeHome) {
   const prompt = `You are a helpful advisor for new college graduates figuring out where to live.
 
@@ -169,32 +171,32 @@ Their monthly take-home pay is $${takeHome.monthly.toLocaleString()}.
 Their max recommended rent is $${takeHome.maxRent.toLocaleString()}/month (30% rule).
 ${vibe ? `They want a ${vibe} neighborhood vibe.` : ''}
 
-Write a friendly, specific 4-5 sentence summary that:
-1. Tells them what their life actually looks like on this salary in ${city}
-2. Recommends 2-3 specific neighborhoods that fit their budget${vibe ? ` and ${vibe} vibe` : ''}
-3. Gives one honest piece of advice about living in ${city} on this income
-4. Sounds like a smart friend who lives there, not a financial advisor
+Respond with ONLY a valid JSON object, no markdown, no backticks, no explanation. Use this exact format:
+{
+  "summary": "3-4 sentence friendly overview of what life looks like in this city on this salary. Be specific, honest, and sound like a smart friend who lives there.",
+  "neighborhoods": [
+    {
+      "name": "Neighborhood Name",
+      "borough": "Borough or area name if applicable, otherwise empty string",
+      "vibe": "One sentence description of the neighborhood vibe",
+      "rentRange": "$X,XXX–$X,XXX",
+      "pros": ["pro 1", "pro 2", "pro 3"],
+      "warning": "One honest heads up about this neighborhood"
+    }
+  ]
+}
 
-Be specific to ${city}. Be honest. Be encouraging but realistic.`;
+Return exactly 3 neighborhoods. Make sure rentRange fits within or slightly above their $${takeHome.maxRent.toLocaleString()} budget. Be specific to ${city}.`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('/api/analyze', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': process.env.REACT_APP_ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 400,
-        messages: [{ role: 'user', content: prompt }],
-      }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt }),
     });
     if (!res.ok) return null;
     const data = await res.json();
-    return data.content[0].text;
+    return JSON.parse(data.text);
   } catch {
     return null;
   }
