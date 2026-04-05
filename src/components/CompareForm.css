@@ -1,0 +1,52 @@
+.compare-form-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.75rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  margin-top: 0.5rem;
+}
+
+.compare-cols {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 1.5rem;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+@media (max-width: 640px) {
+  .compare-cols { grid-template-columns: 1fr; }
+  .compare-vs { text-align: center; }
+}
+
+.compare-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.compare-col-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.25rem;
+}
+
+.compare-vs {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #d1d5db;
+  text-align: center;
+  padding: 0 0.5rem;
+}
+
+.compare-vibe {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1.25rem;
+  max-width: 300px;
+}
