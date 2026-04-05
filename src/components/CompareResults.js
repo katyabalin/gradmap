@@ -22,8 +22,8 @@ function CityColumn({ data, label }) {
 
       <div className="mini-pay-grid">
         <MiniPayCard label="Take-Home" value={'$' + takeHome.monthly.toLocaleString() + '/mo'} highlight />
-        <MiniPayCard label="Max Rent" value={'$' + takeHome.maxRent.toLocaleString() + '/mo'} />
-        <MiniPayCard label="Left After Rent" value={'$' + (takeHome.monthly - takeHome.maxRent).toLocaleString() + '/mo'} />
+        <MiniPayCard label="Avg Rent" value={'$' + takeHome.typicalRent.toLocaleString() + '/mo'} />
+        <MiniPayCard label="After Rent + Expenses" value={'$' + takeHome.leftAfterEverything.toLocaleString() + '/mo'} />
       </div>
 
       {summary && (
@@ -39,29 +39,26 @@ function CityColumn({ data, label }) {
 function CompareResults({ results }) {
   const { cityA, cityB } = results;
 
-  const winnerCity = cityA.takeHome.monthly - cityA.takeHome.maxRent >
-    cityB.takeHome.monthly - cityB.takeHome.maxRent ? cityA : cityB;
+  const winnerCity = cityA.takeHome.leftAfterEverything >
+    cityB.takeHome.leftAfterEverything ? cityA : cityB;
   const winnerLabel = winnerCity === cityA ? 'Offer A' : 'Offer B';
   const diff = Math.abs(
-    (cityA.takeHome.monthly - cityA.takeHome.maxRent) -
-    (cityB.takeHome.monthly - cityB.takeHome.maxRent)
+    cityA.takeHome.leftAfterEverything - cityB.takeHome.leftAfterEverything
   );
 
   return (
     <div className="compare-results">
 
-      {/* Winner banner */}
       <div className="winner-banner">
         <div className="winner-trophy">🏆</div>
         <div>
           <div className="winner-title">{winnerLabel} wins on affordability</div>
           <div className="winner-sub">
-            {winnerCity.city} leaves you ${diff.toLocaleString()}/mo more after rent
+            {winnerCity.city} leaves you ${diff.toLocaleString()}/mo more after rent and expenses
           </div>
         </div>
       </div>
 
-      {/* Side by side */}
       <div className="compare-grid">
         <CityColumn data={cityA} label="Offer A" />
         <div className="compare-divider" />

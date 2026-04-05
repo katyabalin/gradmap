@@ -3,15 +3,7 @@ const RENTCAST_KEY = process.env.REACT_APP_RENTCAST_API_KEY;
 
 
 // Calculate take-home pay
-export function calculateTakeHome(salary, city) {
-  const federal = salary * 0.22;
-  const state = city.includes('TX') ? 0 : city.includes('FL') ? 0 : salary * 0.05;
-  const fica = salary * 0.0765;
-  const annual = salary - federal - state - fica;
-  const monthly = Math.round(annual / 12);
-  const maxRent = Math.round(monthly * 0.3);
-  return { annual: Math.round(annual), monthly, maxRent };
-}
+
 
 // Get city demographics from Census API
 export async function getCityStats(city) {
@@ -200,6 +192,69 @@ Return exactly 3 neighborhoods. Make sure rentRange fits within or slightly abov
   } catch {
     return null;
   }
+}
+
+// Main function
+export function calculateTakeHome(salary, city) {
+  const federal = salary * 0.22;
+  const state = city.includes('TX') ? 0 : city.includes('FL') ? 0 : salary * 0.05;
+  const fica = salary * 0.0765;
+  const annual = salary - federal - state - fica;
+  const monthly = Math.round(annual / 12);
+
+  // Real average rent by city
+  const avgRent = {
+    'New York, NY': 3200,
+    'San Francisco, CA': 3500,
+    'Los Angeles, CA': 2800,
+    'Chicago, IL': 1900,
+    'Seattle, WA': 2400,
+    'Austin, TX': 1800,
+    'Boston, MA': 3000,
+    'Washington, DC': 2600,
+    'Miami, FL': 2500,
+    'Denver, CO': 2000,
+    'Atlanta, GA': 1800,
+    'Nashville, TN': 1900,
+  };
+
+  // Cost of living index relative to national average (100 = average)
+  const colIndex = {
+    'New York, NY': 187,
+    'San Francisco, CA': 194,
+    'Los Angeles, CA': 163,
+    'Chicago, IL': 107,
+    'Seattle, WA': 150,
+    'Austin, TX': 118,
+    'Boston, MA': 162,
+    'Washington, DC': 153,
+    'Miami, FL': 123,
+    'Denver, CO': 128,
+    'Atlanta, GA': 108,
+    'Nashville, TN': 112,
+  };
+
+  const typicalRent = avgRent[city] || Math.round(monthly * 0.3);
+  const maxRent = Math.round(monthly * 0.3);
+  const col = colIndex[city] || 100;
+
+  // Estimated monthly expenses beyond rent (food, transport, misc) adjusted for COL
+  const baseExpenses = 1500;
+  const adjustedExpenses = Math.round(baseExpenses * (col / 100));
+
+  const leftAfterRent = monthly - typicalRent;
+  const leftAfterEverything = monthly - typicalRent - adjustedExpenses;
+
+  return {
+    annual: Math.round(annual),
+    monthly,
+    maxRent,
+    typicalRent,
+    adjustedExpenses,
+    leftAfterRent,
+    leftAfterEverything,
+    colIndex: col,
+  };
 }
 
 // Main function

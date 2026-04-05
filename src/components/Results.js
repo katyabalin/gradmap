@@ -56,16 +56,15 @@ function Results({ results }) {
             <div className="pay-value">${takeHome.monthly.toLocaleString()}</div>
           </div>
           <div className="pay-card">
-            <div className="pay-label">Max Rent (30% rule)</div>
-            <div className="pay-value">${takeHome.maxRent.toLocaleString()}</div>
+            <div className="pay-label">Avg Rent in {city.split(',')[0]}</div>
+            <div className="pay-value">${takeHome.typicalRent.toLocaleString()}</div>
           </div>
           <div className="pay-card">
-            <div className="pay-label">Left After Rent</div>
-            <div className="pay-value">${(takeHome.monthly - takeHome.maxRent).toLocaleString()}</div>
+            <div className="pay-label">After Rent + Expenses</div>
+            <div className="pay-value">${takeHome.leftAfterEverything.toLocaleString()}</div>
           </div>
         </div>
       </div>
-
 
         {/* City Snapshot */}
 {cityStats && (
