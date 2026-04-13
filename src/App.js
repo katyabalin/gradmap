@@ -5,8 +5,7 @@ import InputForm from './components/InputForm';
 import Results from './components/Results';
 import CompareForm from './components/CompareForm';
 import CompareResults from './components/CompareResults';
-import { analyzeCity, compareAI } from './utils/api';
-
+import { analyzeCity } from './utils/api';
 
 function App() {
   const [activeTab, setActiveTab] = useState('single');
