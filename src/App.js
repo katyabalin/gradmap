@@ -5,7 +5,8 @@ import InputForm from './components/InputForm';
 import Results from './components/Results';
 import CompareForm from './components/CompareForm';
 import CompareResults from './components/CompareResults';
-import { analyzeCity } from './utils/api';
+import { analyzeCity, compareAI } from './utils/api';
+
 
 function App() {
   const [activeTab, setActiveTab] = useState('single');
@@ -34,22 +35,27 @@ function App() {
     }
   };
 
-  const handleCompare = async (formData) => {
-    setCompareLoading(true);
-    setCompareError('');
-    setCompareResults(null);
-    try {
-      const [cityA, cityB] = await Promise.all([
-        analyzeCity({ salary: formData.salaryA, city: formData.cityA, vibe: formData.vibe }),
-        analyzeCity({ salary: formData.salaryB, city: formData.cityB, vibe: formData.vibe }),
-      ]);
-      setCompareResults({ cityA, cityB });
-    } catch {
-      setCompareError('Something went wrong. Please try again.');
-    } finally {
-      setCompareLoading(false);
-    }
-  };
+
+const handleCompare = async (formData) => {
+  setCompareLoading(true);
+  setCompareError('');
+  setCompareResults(null);
+  try {
+    const [cityAData, cityBData] = await Promise.all([
+      analyzeCity({ salary: formData.salaryA, city: formData.cityA, vibe: formData.vibe }),
+      analyzeCity({ salary: formData.salaryB, city: formData.cityB, vibe: formData.vibe }),
+    ]);
+    const comparison = await compareAI(
+      formData.cityA, formData.salaryA, cityAData.takeHome,
+      formData.cityB, formData.salaryB, cityBData.takeHome
+    );
+    setCompareResults({ cityA: cityAData, cityB: cityBData, comparison });
+  } catch {
+    setCompareError('Something went wrong. Please try again.');
+  } finally {
+    setCompareLoading(false);
+  }
+};
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);

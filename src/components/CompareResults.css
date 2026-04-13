@@ -5,7 +5,6 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Winner banner */
 .winner-banner {
   display: flex;
   align-items: center;
@@ -13,7 +12,7 @@
   background: #111827;
   border-radius: 12px;
   padding: 1.5rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .winner-trophy { font-size: 2rem; }
@@ -32,7 +31,58 @@
   font-weight: 400;
 }
 
-/* Compare grid */
+.ai-analysis-btn {
+  width: 100%;
+  background: #ffffff;
+  border: 2px solid #16a34a;
+  border-radius: 10px;
+  padding: 1rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #16a34a;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+}
+
+.ai-analysis-btn:hover {
+  background: #16a34a;
+  color: #ffffff;
+}
+
+.ai-analysis-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.comparison-ai-box {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-top: 3px solid #16a34a;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  margin-bottom: 2rem;
+}
+
+.comparison-ai-label {
+  font-size: 0.7rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #16a34a;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.comparison-ai-text {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: #374151;
+  font-weight: 300;
+}
+
 .compare-grid {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -51,7 +101,6 @@
   align-self: stretch;
 }
 
-/* City column */
 .compare-city-col {
   display: flex;
   flex-direction: column;
@@ -89,7 +138,6 @@
   font-weight: 300;
 }
 
-/* Mini pay cards */
 .mini-pay-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -128,7 +176,53 @@
   color: #111827;
 }
 
-/* AI box */
+.tax-section-label {
+  font-size: 0.7rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #16a34a;
+  font-weight: 600;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tax-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.tax-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.tax-card-highlight {
+  background: rgba(22,163,74,0.06);
+  border-color: #16a34a;
+}
+
+.tax-label {
+  font-size: 0.65rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #9ca3af;
+  margin-bottom: 0.3rem;
+  font-weight: 500;
+}
+
+.tax-value {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.tax-card-highlight .tax-value { color: #16a34a; }
+
 .compare-ai-box {
   background: #ffffff;
   border: 1px solid #e5e7eb;

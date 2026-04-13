@@ -257,6 +257,61 @@ export function calculateTakeHome(salary, city) {
   };
 }
 
+export function getCityTaxInfo(city) {
+  const taxInfo = {
+    'New York, NY': { stateRate: 6.85, stateName: 'New York', colIndex: 187, avgRent: 3200 },
+    'San Francisco, CA': { stateRate: 9.3, stateName: 'California', colIndex: 194, avgRent: 3500 },
+    'Los Angeles, CA': { stateRate: 9.3, stateName: 'California', colIndex: 163, avgRent: 2800 },
+    'Chicago, IL': { stateRate: 4.95, stateName: 'Illinois', colIndex: 107, avgRent: 1900 },
+    'Seattle, WA': { stateRate: 0, stateName: 'Washington', colIndex: 150, avgRent: 2400 },
+    'Austin, TX': { stateRate: 0, stateName: 'Texas', colIndex: 118, avgRent: 1800 },
+    'Boston, MA': { stateRate: 5.0, stateName: 'Massachusetts', colIndex: 162, avgRent: 3000 },
+    'Washington, DC': { stateRate: 8.5, stateName: 'Washington DC', colIndex: 153, avgRent: 2600 },
+    'Miami, FL': { stateRate: 0, stateName: 'Florida', colIndex: 123, avgRent: 2500 },
+    'Denver, CO': { stateRate: 4.4, stateName: 'Colorado', colIndex: 128, avgRent: 2000 },
+    'Atlanta, GA': { stateRate: 5.49, stateName: 'Georgia', colIndex: 108, avgRent: 1800 },
+    'Nashville, TN': { stateRate: 0, stateName: 'Tennessee', colIndex: 112, avgRent: 1900 },
+  };
+  return taxInfo[city] || { stateRate: 5.0, stateName: 'State', colIndex: 100, avgRent: 1800 };
+}
+
+export async function compareAI(cityA, salaryA, takeHomeA, cityB, salaryB, takeHomeB) {
+  const taxA = getCityTaxInfo(cityA);
+  const taxB = getCityTaxInfo(cityB);
+
+  const prompt = `You are a financial advisor helping a new college grad compare two job offers.
+
+Offer A: $${salaryA.toLocaleString()} in ${cityA}
+- State income tax: ${taxA.stateRate}%
+- Average rent: $${taxA.avgRent.toLocaleString()}/mo
+- Cost of living index: ${taxA.colIndex} (100 = national average)
+- Monthly take-home: $${takeHomeA.monthly.toLocaleString()}
+- Left after rent + expenses: $${takeHomeA.leftAfterEverything.toLocaleString()}
+
+Offer B: $${salaryB.toLocaleString()} in ${cityB}
+- State income tax: ${taxB.stateRate}%
+- Average rent: $${taxB.avgRent.toLocaleString()}/mo
+- Cost of living index: ${taxB.colIndex} (100 = national average)
+- Monthly take-home: $${takeHomeB.monthly.toLocaleString()}
+- Left after rent + expenses: $${takeHomeB.leftAfterEverything.toLocaleString()}
+
+Write a 3-4 sentence explanation of which offer is better and exactly why. Be specific about taxes, rent differences, and cost of living. Sound like a smart friend explaining it simply. End with one sentence about what kind of person would prefer the other city anyway (career growth, lifestyle, etc).`;
+
+  try {
+    const res = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt }),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.text;
+  } catch {
+    return null;
+  }
+}
+
+
 // Main function
 export async function analyzeCity({ salary, city, vibe }) {
   const takeHome = calculateTakeHome(salary, city);
