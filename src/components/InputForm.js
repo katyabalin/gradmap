@@ -7,17 +7,29 @@ const CITIES = [
   'Miami, FL', 'Denver, CO', 'Atlanta, GA', 'Nashville, TN'
 ];
 
-const VIBES = ['Trendy & Social', 'Quiet & Residential', 'Walkable & Urban', 'Outdoorsy', 'Artsy & Creative'];
+const VIBES = [
+  'Trendy & Social',
+  'Quiet & Residential',
+  'Walkable & Urban',
+  'Outdoorsy',
+  'Artsy & Creative',
+  'Foodie & Restaurant Scene',
+  'Fitness & Wellness',
+  'Young Professional',
+  'Family Friendly',
+  'Nightlife & Entertainment',
+];
 
 function InputForm({ onSubmit, loading }) {
   const [salary, setSalary] = useState('');
   const [city, setCity] = useState('');
   const [vibe, setVibe] = useState('');
+  const [age, setAge] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!salary || !city) return;
-    onSubmit({ salary: parseInt(salary), city, vibe });
+    onSubmit({ salary: parseInt(salary), city, vibe, age: parseInt(age) || 25 });
   };
 
   return (
@@ -45,6 +57,18 @@ function InputForm({ onSubmit, loading }) {
               <option value="">Select a city...</option>
               {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
+          </div>
+          <div className="form-group">
+            <label className="form-label">Your Age</label>
+            <input
+              className="form-input form-input-standalone"
+              type="number"
+              placeholder="22"
+              value={age}
+              onChange={e => setAge(e.target.value)}
+              min="18"
+              max="65"
+            />
           </div>
           <div className="form-group">
             <label className="form-label">Neighborhood Vibe</label>

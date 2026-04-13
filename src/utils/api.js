@@ -155,17 +155,18 @@ export async function getRentals(city, maxRent) {
   }
 }
 
-async function generateAISummary(salary, city, vibe, takeHome) {
+async function generateAISummary(salary, city, vibe, takeHome, age) {
   const prompt = `You are a helpful advisor for new college graduates figuring out where to live.
 
 Someone is moving to ${city} with a $${salary.toLocaleString()} annual salary.
+They are ${age || 25} years old.
 Their monthly take-home pay is $${takeHome.monthly.toLocaleString()}.
 Their max recommended rent is $${takeHome.maxRent.toLocaleString()}/month (30% rule).
 ${vibe ? `They want a ${vibe} neighborhood vibe.` : ''}
 
 Respond with ONLY a valid JSON object, no markdown, no backticks, no explanation. Use this exact format:
 {
-  "summary": "3-4 sentence friendly overview of what life looks like in this city on this salary. Be specific, honest, and sound like a smart friend who lives there.",
+  "summary": "3-4 sentence friendly overview of what life looks like in this city on this salary for someone this age. Be specific, honest, and sound like a smart friend who lives there.",
   "neighborhoods": [
     {
       "name": "Neighborhood Name",
@@ -178,8 +179,7 @@ Respond with ONLY a valid JSON object, no markdown, no backticks, no explanation
   ]
 }
 
-Return exactly 3 neighborhoods. Make sure rentRange fits within or slightly above their $${takeHome.maxRent.toLocaleString()} budget. Be specific to ${city}.`;
-
+Return exactly 3 neighborhoods. Make sure rentRange fits within or slightly above their $${takeHome.maxRent.toLocaleString()} budget. Be specific to ${city} and relevant to a ${age || 25} year old.`;
   try {
     const res = await fetch('/api/analyze', {
       method: 'POST',
@@ -313,11 +313,11 @@ Write a 3-4 sentence explanation of which offer is better and exactly why. Be sp
 
 
 // Main function
-export async function analyzeCity({ salary, city, vibe }) {
+export async function analyzeCity({ salary, city, vibe, age }) {
   const takeHome = calculateTakeHome(salary, city);
 
   const [aiResult, cityStats] = await Promise.all([
-    generateAISummary(salary, city, vibe, takeHome),
+    generateAISummary(salary, city, vibe, takeHome, age),
     getCityStats(city),
   ]);
 
@@ -325,6 +325,7 @@ export async function analyzeCity({ salary, city, vibe }) {
     salary,
     city,
     vibe,
+    age,
     takeHome,
     summary: aiResult?.summary || null,
     neighborhoods: aiResult?.neighborhoods || [],

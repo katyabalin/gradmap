@@ -3,7 +3,7 @@ import './Results.css';
 
 
 function Results({ results }) {
-  const { salary, city, takeHome, summary, cityStats } = results;
+  const { salary, city, takeHome, summary, cityStats, age, vibe } = results;
   const citySlug = city.split(',')[0].toLowerCase().replace(/ /g, '-');
   const stateSlug = (city.split(', ')[1] || '').toLowerCase();
 
@@ -31,15 +31,31 @@ function Results({ results }) {
   ];
 
   const nearbyCategories = [
-    { label: '🍜 Restaurants', search: 'restaurants in ' + city },
-    { label: '☕ Cafes', search: 'coffee shops in ' + city },
-    { label: '💪 Gyms', search: 'gyms in ' + city },
-    { label: '🌳 Parks', search: 'parks in ' + city },
-    { label: '🛒 Grocery', search: 'grocery stores in ' + city },
-    { label: '🎉 Nightlife', search: 'bars nightlife in ' + city },
-    { label: '🏥 Healthcare', search: 'urgent care clinics in ' + city },
-    { label: '🚇 Transit', search: 'public transit ' + city },
-  ];
+  { 
+    label: '🍜 Restaurants', 
+    search: age < 30 ? `trendy restaurants ${city.split(',')[0]}` : `best restaurants ${city.split(',')[0]}`,
+    maps: `restaurants in ${city}`
+  },
+  { 
+    label: '☕ Cafes', 
+    search: age < 25 ? `aesthetic cafes ${city.split(',')[0]}` : age < 35 ? `work-friendly coffee shops ${city.split(',')[0]}` : `cozy cafes ${city.split(',')[0]}`,
+    maps: `coffee shops in ${city}`
+  },
+  { 
+    label: '💪 Gyms', 
+    search: vibe === 'Fitness & Wellness' ? `pilates yoga studios ${city.split(',')[0]}` : `gyms ${city.split(',')[0]}`,
+    maps: `gyms in ${city}`
+  },
+  { label: '🌳 Parks', search: `parks ${city.split(',')[0]}`, maps: `parks in ${city}` },
+  { label: '🛒 Grocery', search: `grocery stores ${city.split(',')[0]}`, maps: `grocery stores in ${city}` },
+  { 
+    label: '🎉 Nightlife', 
+    search: age < 25 ? `bars clubs ${city.split(',')[0]}` : `wine bars cocktail bars ${city.split(',')[0]}`,
+    maps: `bars nightlife in ${city}`
+  },
+  { label: '🏥 Healthcare', search: `urgent care ${city.split(',')[0]}`, maps: `urgent care clinics in ${city}` },
+  { label: '🚇 Transit', search: `public transit ${city.split(',')[0]}`, maps: `public transit ${city}` },
+];
 
   return (
     <div className="results">
@@ -176,12 +192,14 @@ function Results({ results }) {
               <a
                 key={item.label}
                 className="nearby-card"
-                href={'https://www.google.com/maps/search/' + encodeURIComponent(item.search)}
+                href={'https://www.google.com/maps/search/' + encodeURIComponent(item.maps)}
                 target="_blank"
                 rel="noreferrer"
               >
                 <div className="nearby-label">{item.label}</div>
+                <div className="nearby-search-hint">{item.search.split(' ').slice(0, 3).join(' ')}...</div>
                 <div className="nearby-action">Search on Google Maps</div>
+                
               </a>
             );
           })}

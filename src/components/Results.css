@@ -306,3 +306,11 @@
   font-size: 1.1rem;
   font-weight: 600;
 }
+
+.nearby-search-hint {
+  font-size: 0.7rem;
+  color: #9ca3af;
+  font-weight: 300;
+  font-style: italic;
+  margin-bottom: 0.3rem;
+}
