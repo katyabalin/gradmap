@@ -50,3 +50,12 @@
   margin-bottom: 1.25rem;
   max-width: 300px;
 }
+
+.compare-bottom-row {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+@media (max-width: 640px) { .compare-bottom-row { grid-template-columns: 1fr; } }

@@ -7,7 +7,18 @@ const CITIES = [
   'Miami, FL', 'Denver, CO', 'Atlanta, GA', 'Nashville, TN'
 ];
 
-const VIBES = ['Trendy & Social', 'Quiet & Residential', 'Walkable & Urban', 'Outdoorsy', 'Artsy & Creative'];
+const VIBES = [
+  'Trendy & Social',
+  'Quiet & Residential',
+  'Walkable & Urban',
+  'Outdoorsy',
+  'Artsy & Creative',
+  'Foodie & Restaurant Scene',
+  'Fitness & Wellness',
+  'Young Professional',
+  'Family Friendly',
+  'Nightlife & Entertainment',
+];
 
 function CompareForm({ onSubmit, loading }) {
   const [salaryA, setSalaryA] = useState('');
@@ -15,11 +26,12 @@ function CompareForm({ onSubmit, loading }) {
   const [salaryB, setSalaryB] = useState('');
   const [cityB, setCityB] = useState('');
   const [vibe, setVibe] = useState('');
+  const [age, setAge] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!salaryA || !cityA || !salaryB || !cityB) return;
-    onSubmit({ salaryA: parseInt(salaryA), cityA, salaryB: parseInt(salaryB), cityB, vibe });
+    onSubmit({ salaryA: parseInt(salaryA), cityA, salaryB: parseInt(salaryB), cityB, vibe, age: parseInt(age) || 25 });
   };
 
   const isValid = salaryA && cityA && salaryB && cityB;
@@ -67,12 +79,26 @@ function CompareForm({ onSubmit, loading }) {
           </div>
         </div>
 
-        <div className="compare-vibe">
-          <label className="form-label">Neighborhood Vibe (optional)</label>
-          <select className="form-select" value={vibe} onChange={e => setVibe(e.target.value)}>
-            <option value="">Any vibe...</option>
-            {VIBES.map(v => <option key={v} value={v}>{v}</option>)}
-          </select>
+        <div className="compare-bottom-row">
+          <div className="form-group">
+            <label className="form-label">Your Age</label>
+            <input
+              className="form-input form-input-standalone"
+              type="number"
+              placeholder="22"
+              value={age}
+              onChange={e => setAge(e.target.value)}
+              min="18"
+              max="65"
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Neighborhood Vibe (optional)</label>
+            <select className="form-select" value={vibe} onChange={e => setVibe(e.target.value)}>
+              <option value="">Any vibe...</option>
+              {VIBES.map(v => <option key={v} value={v}>{v}</option>)}
+            </select>
+          </div>
         </div>
 
         <button className="submit-btn" type="submit" disabled={loading || !isValid}>

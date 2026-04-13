@@ -42,14 +42,10 @@ const handleCompare = async (formData) => {
   setCompareResults(null);
   try {
     const [cityAData, cityBData] = await Promise.all([
-      analyzeCity({ salary: formData.salaryA, city: formData.cityA, vibe: formData.vibe }),
-      analyzeCity({ salary: formData.salaryB, city: formData.cityB, vibe: formData.vibe }),
+      analyzeCity({ salary: formData.salaryA, city: formData.cityA, vibe: formData.vibe, age: formData.age }),
+      analyzeCity({ salary: formData.salaryB, city: formData.cityB, vibe: formData.vibe, age: formData.age }),
     ]);
-    const comparison = await compareAI(
-      formData.cityA, formData.salaryA, cityAData.takeHome,
-      formData.cityB, formData.salaryB, cityBData.takeHome
-    );
-    setCompareResults({ cityA: cityAData, cityB: cityBData, comparison });
+    setCompareResults({ cityA: cityAData, cityB: cityBData });
   } catch {
     setCompareError('Something went wrong. Please try again.');
   } finally {
