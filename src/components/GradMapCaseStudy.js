@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './GradMapCaseStudy.css';
 
 function Section({ number, title, children }) {
