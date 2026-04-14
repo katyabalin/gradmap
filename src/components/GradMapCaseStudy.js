@@ -35,7 +35,7 @@ function RoadmapItem({ priority, feature, why }) {
 }
 
 export default function GradMapCaseStudy() {
-  const [activeSection, setActiveSection] = useState(null);
+  
 
   if (window.location.pathname !== '/case-study') return null;
 
