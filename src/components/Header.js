@@ -1,6 +1,9 @@
 import React from 'react';
 import './Header.css';
 
+export default Header;
+
+
 function Header({ activeTab, onTabChange }) {
   return (
     <header className="header">
@@ -19,9 +22,10 @@ function Header({ activeTab, onTabChange }) {
           Compare Cities
         </button>
       </div>
-      <div className="header-tag">Powered by Claude AI</div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+        <a href="/case-study" style={{ fontSize: '0.75rem', color: '#16a34a', textDecoration: 'none', fontWeight: 600, fontFamily: 'Outfit, sans-serif', letterSpacing: '1px', textTransform: 'uppercase' }}>Case Study</a>
+        <div className="header-tag">Powered by Claude AI</div>
+      </div>
     </header>
   );
 }
-
-export default Header;

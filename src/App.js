@@ -6,6 +6,7 @@ import Results from './components/Results';
 import CompareForm from './components/CompareForm';
 import CompareResults from './components/CompareResults';
 import { analyzeCity } from './utils/api';
+import GradMapCaseStudy from './components/GradMapCaseStudy';
 
 function App() {
   const [activeTab, setActiveTab] = useState('single');
@@ -59,6 +60,12 @@ const handleCompare = async (formData) => {
     setError('');
     setCompareError('');
   };
+
+  if (window.location.pathname === '/case-study') {
+    return <GradMapCaseStudy />;
+  }
+
+
 
   return (
     <div className="app">
