@@ -189,7 +189,7 @@ function Results({ results }) {
         <div className="places-grid">
           {nearbyCategories.map(function(item) {
             return (
-              
+              <a
                 key={item.label}
                 className="nearby-card"
                 href={'https://www.google.com/maps/search/' + encodeURIComponent(item.maps)}
