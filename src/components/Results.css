@@ -314,3 +314,23 @@
   font-style: italic;
   margin-bottom: 0.3rem;
 }
+
+.budget-trigger-btn {
+  width: 100%;
+  background: #ffffff;
+  border: 2px solid #16a34a;
+  border-radius: 10px;
+  padding: 1rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #16a34a;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+}
+
+.budget-trigger-btn:hover {
+  background: #16a34a;
+  color: #ffffff;
+}
