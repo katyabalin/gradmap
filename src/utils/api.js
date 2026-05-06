@@ -21,6 +21,7 @@ export async function getCityStats(city) {
     'Denver, CO': { place: '20000', state: '08' },
     'Atlanta, GA': { place: '04000', state: '13' },
     'Nashville, TN': { place: '52006', state: '47' },
+    'Raleigh, NC': { place: '55000', state: '37' },
   };
 
   const location = cityMap[city];
@@ -84,6 +85,7 @@ export async function getPlaces(city, type) {
     'Denver, CO': [39.7392, -104.9903],
     'Atlanta, GA': [33.7490, -84.3880],
     'Nashville, TN': [36.1627, -86.7816],
+    'Raleigh, NC': [35.7796, -78.6382],
   };
 
   const coords = cityCoords[city] || [40.7128, -74.0060];
@@ -216,6 +218,7 @@ export function calculateTakeHome(salary, city) {
     'Denver, CO': 2000,
     'Atlanta, GA': 1800,
     'Nashville, TN': 1900,
+    'Raleigh, NC': 1600,
   };
 
   // Cost of living index relative to national average (100 = average)
@@ -232,6 +235,7 @@ export function calculateTakeHome(salary, city) {
     'Denver, CO': 128,
     'Atlanta, GA': 108,
     'Nashville, TN': 112,
+    'Raleigh, NC': 103,
   };
 
   const typicalRent = avgRent[city] || Math.round(monthly * 0.3);
@@ -271,6 +275,7 @@ export function getCityTaxInfo(city) {
     'Denver, CO': { stateRate: 4.4, stateName: 'Colorado', colIndex: 128, avgRent: 2000 },
     'Atlanta, GA': { stateRate: 5.49, stateName: 'Georgia', colIndex: 108, avgRent: 1800 },
     'Nashville, TN': { stateRate: 0, stateName: 'Tennessee', colIndex: 112, avgRent: 1900 },
+    'Raleigh, NC': { stateRate: 4.25, stateName: 'North Carolina', colIndex: 103, avgRent: 1600 },
   };
   return taxInfo[city] || { stateRate: 5.0, stateName: 'State', colIndex: 100, avgRent: 1800 };
 }

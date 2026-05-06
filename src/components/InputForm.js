@@ -4,7 +4,8 @@ import './InputForm.css';
 const CITIES = [
   'New York, NY', 'San Francisco, CA', 'Los Angeles, CA', 'Chicago, IL',
   'Seattle, WA', 'Austin, TX', 'Boston, MA', 'Washington, DC',
-  'Miami, FL', 'Denver, CO', 'Atlanta, GA', 'Nashville, TN'
+  'Miami, FL', 'Denver, CO', 'Atlanta, GA', 'Nashville, TN',
+  'Raleigh, NC'
 ];
 
 const VIBES = [

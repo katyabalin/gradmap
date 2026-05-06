@@ -6,6 +6,7 @@ const STATE_RATES = {
   'Chicago, IL': '4.95%', 'Seattle, WA': '0%', 'Austin, TX': '0%',
   'Boston, MA': '5.0%', 'Washington, DC': '8.5%', 'Miami, FL': '0%',
   'Denver, CO': '4.4%', 'Atlanta, GA': '5.49%', 'Nashville, TN': '0%',
+  'Raleigh, NC': '4.25%',
 };
 
 const COL_INDEXES = {
@@ -13,6 +14,7 @@ const COL_INDEXES = {
   'Chicago, IL': 107, 'Seattle, WA': 150, 'Austin, TX': 118,
   'Boston, MA': 162, 'Washington, DC': 153, 'Miami, FL': 123,
   'Denver, CO': 128, 'Atlanta, GA': 108, 'Nashville, TN': 112,
+  'Raleigh, NC': 103,
 };
 
 function MiniPayCard({ label, value, highlight }) {
