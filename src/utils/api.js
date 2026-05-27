@@ -1,6 +1,12 @@
 
 const RENTCAST_KEY = process.env.REACT_APP_RENTCAST_API_KEY;
 
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.REACT_APP_SUPABASE_URL,
+  process.env.REACT_APP_SUPABASE_ANON_KEY
+);
 
 // Calculate take-home pay
 
@@ -310,6 +316,20 @@ Write a 3-4 sentence explanation of which offer is better and exactly why. Be sp
     });
     if (!res.ok) return null;
     const data = await res.json();
+
+
+
+    supabase.from('events').insert({
+  event_type: 'comparison',
+  city_a: cityA,
+  city_b: cityB,
+  salary: salaryA,
+  vibe: null,
+  age: null,
+}).then(() => {});
+
+
+
     return data.text;
   } catch {
     return null;
@@ -325,6 +345,17 @@ export async function analyzeCity({ salary, city, vibe, age }) {
     generateAISummary(salary, city, vibe, takeHome, age),
     getCityStats(city),
   ]);
+
+
+  supabase.from('events').insert({
+  event_type: 'single_search',
+  city,
+  salary,
+  vibe: vibe || 'EMPTY',
+  age: age || 25,
+}).then(() => {});
+
+
 
   return {
     salary,
