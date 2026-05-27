@@ -7,7 +7,6 @@ import CompareForm from './components/CompareForm';
 import CompareResults from './components/CompareResults';
 import { analyzeCity } from './utils/api';
 import GradMapCaseStudy from './components/GradMapCaseStudy';
-import { logEvent } from './utils/supabase';
 
 function App() {
   const [activeTab, setActiveTab] = useState('single');
@@ -29,7 +28,6 @@ function App() {
     try {
       const data = await analyzeCity(formData);
       setResults(data);
-      await logEvent({ event_type: 'single_search', city: formData.city, salary: formData.salary, vibe: formData.vibe, age: formData.age });
     } catch {
       setError('Something went wrong. Please try again.');
     } finally {
@@ -48,7 +46,6 @@ const handleCompare = async (formData) => {
       analyzeCity({ salary: formData.salaryB, city: formData.cityB, vibe: formData.vibe, age: formData.age }),
     ]);
     setCompareResults({ cityA: cityAData, cityB: cityBData });
-    await logEvent({ event_type: 'comparison', city_a: formData.cityA, city_b: formData.cityB, salary: formData.salaryA, vibe: formData.vibe, age: formData.age });
   } catch {
     setCompareError('Something went wrong. Please try again.');
   } finally {

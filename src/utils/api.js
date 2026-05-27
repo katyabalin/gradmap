@@ -1,6 +1,4 @@
 
-import { logAIUsage } from './supabase';
-
 const RENTCAST_KEY = process.env.REACT_APP_RENTCAST_API_KEY;
 
 
@@ -160,35 +158,39 @@ export async function getRentals(city, maxRent) {
 }
 
 async function generateAISummary(salary, city, vibe, takeHome, age) {
-  const prompt = `Someone is moving to ${city} with a $${salary.toLocaleString()} annual salary.
+  const prompt = `You are a helpful advisor for new college graduates figuring out where to live.
+
+Someone is moving to ${city} with a $${salary.toLocaleString()} annual salary.
 They are ${age || 25} years old.
-Monthly take-home pay: $${takeHome.monthly.toLocaleString()}
-Max recommended rent: $${takeHome.maxRent.toLocaleString()}/month (30% rule)
-${vibe ? `Preferred vibe: ${vibe}` : ''}
+Their monthly take-home pay is $${takeHome.monthly.toLocaleString()}.
+Their max recommended rent is $${takeHome.maxRent.toLocaleString()}/month (30% rule).
+${vibe ? `They want a ${vibe} neighborhood vibe.` : ''}
 
-Recommend exactly 3 neighborhoods with rent ranges that fit within or slightly above their budget. Be specific to ${city} and relevant to a ${age || 25} year old.`;
+Respond with ONLY a valid JSON object, no markdown, no backticks, no explanation. Use this exact format:
+{
+  "summary": "3-4 sentence friendly overview of what life looks like in this city on this salary for someone this age. Be specific, honest, and sound like a smart friend who lives there.",
+  "neighborhoods": [
+    {
+      "name": "Neighborhood Name",
+      "borough": "Borough or area name if applicable, otherwise empty string",
+      "vibe": "One sentence description of the neighborhood vibe",
+      "rentRange": "$X,XXX–$X,XXX",
+      "pros": ["pro 1", "pro 2", "pro 3"],
+      "warning": "One honest heads up about this neighborhood"
+    }
+  ]
+}
 
+Return exactly 3 neighborhoods. Make sure rentRange fits within or slightly above their $${takeHome.maxRent.toLocaleString()} budget. Be specific to ${city} and relevant to a ${age || 25} year old.`;
   try {
     const res = await fetch('/api/analyze', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type: 'analyze', prompt }),
+      body: JSON.stringify({ prompt }),
     });
     if (!res.ok) return null;
     const data = await res.json();
-
-    if (data.usage) {
-      logAIUsage({
-        event_type: 'city_analysis',
-        city,
-        input_tokens: data.usage.input_tokens,
-        output_tokens: data.usage.output_tokens,
-        cache_creation_tokens: data.usage.cache_creation_input_tokens || 0,
-        cache_read_tokens: data.usage.cache_read_input_tokens || 0,
-      });
-    }
-
-    return data.result;
+    return JSON.parse(data.text);
   } catch {
     return null;
   }

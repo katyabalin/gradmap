@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import './CompareResults.css';
-import { logAIUsage } from '../utils/supabase';
 
 const STATE_RATES = {
   'New York, NY': '6.85%', 'San Francisco, CA': '9.3%', 'Los Angeles, CA': '9.3%',
@@ -90,9 +89,12 @@ function CompareResults({ results }) {
 
   const handleGetAnalysis = async () => {
     setAiLoading(true);
-    setAiAnalysis('');
-
-    const prompt = `Compare these two job offers for a new college grad.
+    try {
+      const res = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: `You are a financial advisor helping a new college grad compare two job offers.
 
 Offer A: $${cityA.salary.toLocaleString()} in ${cityA.city}
 - Monthly take-home: $${cityA.takeHome.monthly.toLocaleString()}
@@ -108,46 +110,11 @@ Offer B: $${cityB.salary.toLocaleString()} in ${cityB.city}
 - Left after rent and expenses: $${cityB.takeHome.leftAfterEverything.toLocaleString()}
 - State income tax: ${STATE_RATES[cityB.city] || 'N/A'}
 
-Write 3-4 sentences explaining which offer is better financially and exactly why. Mention taxes, rent differences, and cost of living with real numbers. Sound like a smart friend. End with one sentence about what kind of person might prefer the other city for career or lifestyle reasons.`;
-
-    try {
-      const res = await fetch('/api/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'stream', prompt }),
+Write 3-4 sentences explaining which offer is better financially and exactly why. Mention taxes, rent differences, and cost of living specifically with real numbers. Sound like a smart friend explaining it simply. End with one sentence about what kind of person might still prefer the other city for career or lifestyle reasons.`,
+        }),
       });
-
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let fullText = '';
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const lines = decoder.decode(value, { stream: true }).split('\n');
-        for (const line of lines) {
-          if (!line.startsWith('data: ')) continue;
-          const raw = line.slice(6).trim();
-          if (!raw) continue;
-          try {
-            const parsed = JSON.parse(raw);
-            if (parsed.text) {
-              fullText += parsed.text;
-              setAiAnalysis(fullText);
-            }
-            if (parsed.done && parsed.usage) {
-              logAIUsage({
-                event_type: 'comparison_analysis',
-                input_tokens: parsed.usage.input_tokens,
-                output_tokens: parsed.usage.output_tokens,
-                cache_creation_tokens: parsed.usage.cache_creation_input_tokens || 0,
-                cache_read_tokens: parsed.usage.cache_read_input_tokens || 0,
-              });
-            }
-          } catch {}
-        }
-      }
+      const data = await res.json();
+      setAiAnalysis(data.text);
     } catch {
       setAiAnalysis(null);
     } finally {
