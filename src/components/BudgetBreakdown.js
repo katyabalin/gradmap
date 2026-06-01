@@ -7,12 +7,9 @@ function BudgetBreakdown({ data, city, takeHome }) {
 
   return (
     <div className="budget-wrap">
-      <div className="budget-title">✦ Your Monthly Budget in {city}</div>
+      <div className="budget-title">Your Monthly Budget in {city}</div>
 
-      <div className="budget-verdict" style={{ borderLeftColor: isComfortable ? '#16a34a' : '#f59e0b' }}>
-        <span style={{ color: isComfortable ? '#16a34a' : '#f59e0b', marginRight: '0.5rem' }}>
-          {isComfortable ? '✓' : '⚠'}
-        </span>
+      <div className="budget-verdict" style={{ borderLeftColor: isComfortable ? '#16A34A' : '#F59E0B' }}>
         {data.verdict}
       </div>
 
@@ -27,7 +24,7 @@ function BudgetBreakdown({ data, city, takeHome }) {
               <div className="budget-bar-wrap">
                 <div className="budget-bar" style={{ width: Math.min((cat.high / 600) * 100, 100) + '%' }} />
               </div>
-              <div className="budget-tip">💡 {cat.tip}</div>
+              <div className="budget-tip">{cat.tip}</div>
             </div>
           );
         })}

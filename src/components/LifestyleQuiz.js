@@ -32,6 +32,7 @@ const QUESTIONS = [
 function LifestyleQuiz({ city, takeHome, onResults }) {
   const [answers, setAnswers] = useState({});
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   const allAnswered = QUESTIONS.every(q => answers[q.id]);
 
@@ -82,7 +83,7 @@ Make the ranges realistic for ${city} and their specific lifestyle choices.`,
       const parsed = JSON.parse(data.text);
       onResults(parsed);
     } catch {
-      onResults(null);
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -90,7 +91,7 @@ Make the ranges realistic for ${city} and their specific lifestyle choices.`,
 
   return (
     <div className="quiz-wrap">
-      <div className="quiz-title">✦ What's Your Lifestyle Like?</div>
+      <div className="quiz-title">What's Your Lifestyle Like?</div>
       <p className="quiz-sub">Answer 5 quick questions and we'll show you exactly where your money goes in {city}.</p>
       <div className="quiz-questions">
         {QUESTIONS.map(q => (
@@ -111,12 +112,15 @@ Make the ranges realistic for ${city} and their specific lifestyle choices.`,
           </div>
         ))}
       </div>
+      {error && (
+        <div className="quiz-error">Something went wrong. Make sure you're on the live site (not running locally), then try again.</div>
+      )}
       <button
         className="quiz-submit"
-        onClick={handleSubmit}
+        onClick={() => { setError(false); handleSubmit(); }}
         disabled={!allAnswered || loading}
       >
-        {loading ? 'Calculating your budget...' : '✦ Show My Budget Breakdown'}
+        {loading ? 'Calculating your budget...' : 'Show My Budget Breakdown'}
       </button>
     </div>
   );

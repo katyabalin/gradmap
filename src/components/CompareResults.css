@@ -1,4 +1,4 @@
-.compare-results { margin-top: 2.5rem; animation: fadeUp 0.4s ease; }
+.compare-results { margin-top: 48px; animation: fadeUp 0.4s ease; }
 
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(16px); }
@@ -8,85 +8,86 @@
 .winner-banner {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  background: #111827;
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
+  gap: 16px;
+  background: #ffffff;
+  border: 1px solid #E2E8F0;
+  border-left: 3px solid #2563EB;
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 24px;
 }
 
-.winner-trophy { font-size: 2rem; }
+.winner-trophy { font-size: 24px; }
 
 .winner-title {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: #ffffff;
-  margin-bottom: 0.25rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #0F172A;
+  margin-bottom: 4px;
 }
 
 .winner-sub {
-  font-size: 0.875rem;
-  color: #16a34a;
-  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #16A34A;
 }
 
 .ai-analysis-btn {
   width: 100%;
   background: #ffffff;
-  border: 2px solid #16a34a;
-  border-radius: 10px;
-  padding: 1rem;
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #16a34a;
+  border: 1px solid #E2E8F0;
+  border-radius: 6px;
+  padding: 16px 24px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #2563EB;
   cursor: pointer;
-  margin-bottom: 1.5rem;
-  transition: all 0.2s;
-  letter-spacing: 0.5px;
+  margin-bottom: 24px;
+  transition: border-color 0.15s, background 0.15s;
+  text-align: left;
 }
 
 .ai-analysis-btn:hover {
-  background: #16a34a;
-  color: #ffffff;
+  border-color: #2563EB;
+  background: #EFF6FF;
 }
 
 .ai-analysis-btn:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 .comparison-ai-box {
   background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-top: 3px solid #16a34a;
-  border-radius: 10px;
-  padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  margin-bottom: 2rem;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 32px;
 }
 
 .comparison-ai-label {
-  font-size: 0.7rem;
-  letter-spacing: 3px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #16a34a;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
+  color: #64748B;
+  font-weight: 500;
+  margin-bottom: 16px;
 }
 
 .comparison-ai-text {
-  font-size: 0.95rem;
-  line-height: 1.8;
-  color: #374151;
-  font-weight: 300;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #334155;
 }
 
 .compare-grid {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
-  gap: 1.5rem;
+  gap: 24px;
   align-items: start;
 }
 
@@ -97,153 +98,151 @@
 
 .compare-divider {
   width: 1px;
-  background: #e5e7eb;
+  background: #E2E8F0;
   align-self: stretch;
 }
 
 .compare-city-col {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 16px;
 }
 
 .compare-city-header {
   background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  padding: 1.25rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  padding: 24px;
 }
 
 .compare-city-label {
-  font-size: 0.65rem;
-  letter-spacing: 2px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #16a34a;
-  font-weight: 600;
-  margin-bottom: 0.4rem;
+  color: #64748B;
+  font-weight: 500;
+  margin-bottom: 8px;
 }
 
 .compare-city-name {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1.3rem;
-  font-weight: 800;
-  color: #111827;
-  margin-bottom: 0.2rem;
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: #0F172A;
+  margin-bottom: 4px;
 }
 
 .compare-city-salary {
-  font-size: 0.85rem;
-  color: #6b7280;
-  font-weight: 300;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #64748B;
 }
 
 .mini-pay-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .mini-pay-card {
   background: #ffffff;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #E2E8F0;
   border-radius: 8px;
-  padding: 0.75rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  padding: 16px;
 }
 
 .mini-pay-highlight {
-  background: #111827;
-  border-color: #111827;
+  border-left: 3px solid #2563EB;
 }
 
-.mini-pay-highlight .mini-pay-label { color: #6b7280; }
-.mini-pay-highlight .mini-pay-value { color: #16a34a; }
+.mini-pay-highlight .mini-pay-value { color: #2563EB; }
 
 .mini-pay-label {
-  font-size: 0.65rem;
-  letter-spacing: 1px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: #9ca3af;
-  margin-bottom: 0.3rem;
+  color: #64748B;
+  margin-bottom: 8px;
   font-weight: 500;
 }
 
 .mini-pay-value {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1rem;
-  font-weight: 800;
-  color: #111827;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0F172A;
 }
 
 .tax-section-label {
-  font-size: 0.7rem;
-  letter-spacing: 3px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #16a34a;
-  font-weight: 600;
-  padding-bottom: 6px;
-  border-bottom: 1px solid #e5e7eb;
+  color: #64748B;
+  font-weight: 500;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #E2E8F0;
 }
 
 .tax-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .tax-card {
   background: #ffffff;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #E2E8F0;
   border-radius: 8px;
-  padding: 0.75rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  padding: 16px;
 }
 
 .tax-card-highlight {
-  background: rgba(22,163,74,0.06);
-  border-color: #16a34a;
+  background: #F0FDF4;
+  border-color: #16A34A;
 }
 
 .tax-label {
-  font-size: 0.65rem;
-  letter-spacing: 1px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: #9ca3af;
-  margin-bottom: 0.3rem;
+  color: #64748B;
+  margin-bottom: 8px;
   font-weight: 500;
 }
 
 .tax-value {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
   font-weight: 700;
-  color: #111827;
+  color: #0F172A;
 }
 
-.tax-card-highlight .tax-value { color: #16a34a; }
+.tax-card-highlight .tax-value { color: #16A34A; }
 
 .compare-ai-box {
   background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-top: 3px solid #16a34a;
-  border-radius: 10px;
-  padding: 1.25rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  padding: 16px;
 }
 
 .compare-ai-label {
-  font-size: 0.65rem;
-  letter-spacing: 3px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #16a34a;
-  font-weight: 600;
-  margin-bottom: 0.6rem;
+  color: #64748B;
+  font-weight: 500;
+  margin-bottom: 8px;
 }
 
 .compare-ai-text {
-  font-size: 0.875rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
   line-height: 1.7;
-  color: #374151;
-  font-weight: 300;
+  color: #334155;
 }

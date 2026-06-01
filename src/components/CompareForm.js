@@ -41,7 +41,7 @@ function CompareForm({ onSubmit, loading }) {
       <form onSubmit={handleSubmit}>
         <div className="compare-cols">
           <div className="compare-col">
-            <div className="compare-col-label">🏙 Offer A</div>
+            <div className="compare-col-label">Offer A</div>
             <div className="form-group">
               <label className="form-label">Annual Salary</label>
               <div className="input-prefix-wrap">
@@ -61,7 +61,7 @@ function CompareForm({ onSubmit, loading }) {
           <div className="compare-vs">VS</div>
 
           <div className="compare-col">
-            <div className="compare-col-label">🌆 Offer B</div>
+            <div className="compare-col-label">Offer B</div>
             <div className="form-group">
               <label className="form-label">Annual Salary</label>
               <div className="input-prefix-wrap">
@@ -102,7 +102,7 @@ function CompareForm({ onSubmit, loading }) {
         </div>
 
         <button className="submit-btn" type="submit" disabled={loading || !isValid}>
-          {loading ? 'Comparing...' : '✦ Compare Cities'}
+          {loading ? 'Comparing...' : 'Compare Cities'}
         </button>
       </form>
     </div>

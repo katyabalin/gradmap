@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import './Results.css';
 import LifestyleQuiz from './LifestyleQuiz';
 import BudgetBreakdown from './BudgetBreakdown';
@@ -10,6 +10,14 @@ function Results({ results }) {
 
   const [showQuiz, setShowQuiz] = useState(false);
   const [budgetData, setBudgetData] = useState(null);
+  const budgetRef = useRef(null);
+
+  const handleShowQuiz = () => {
+    setShowQuiz(true);
+    setTimeout(() => {
+      budgetRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
+  };
 
   const housingLinks = [
     {
@@ -66,7 +74,7 @@ function Results({ results }) {
 
       {/* Your Money */}
       <div className="results-section">
-        <div className="section-label">✦ Your Money</div>
+        <div className="section-label">Your Money</div>
         <div className="pay-cards">
           <div className="pay-card">
             <div className="pay-label">Annual Salary</div>
@@ -90,7 +98,7 @@ function Results({ results }) {
       {/* City Snapshot */}
       {cityStats && (
         <div className="results-section">
-          <div className="section-label">✦ City Snapshot</div>
+          <div className="section-label">City Snapshot</div>
           <div className="snapshot-grid">
             <div className="snapshot-card">
               <div className="snapshot-label">Population</div>
@@ -154,7 +162,7 @@ function Results({ results }) {
       {/* AI Summary */}
       {summary && (
         <div className="results-section">
-          <div className="section-label">✦ Your Life in {city}</div>
+          <div className="section-label">Your Life in {city}</div>
           <div className="ai-box">
             <div className="ai-label">AI City Analysis</div>
             <div className="ai-text">{summary}</div>
@@ -164,7 +172,7 @@ function Results({ results }) {
 
       {/* Find Apartments */}
       <div className="results-section">
-        <div className="section-label">✦ Find Apartments</div>
+        <div className="section-label">Find Apartments</div>
         <p className="housing-intro">
           Browse real listings in {city} filtered to your budget (under ${takeHome.maxRent.toLocaleString()}/mo):
         </p>
@@ -185,7 +193,7 @@ function Results({ results }) {
 
       {/* What's Nearby */}
       <div className="results-section">
-        <div className="section-label">✦ What's Nearby</div>
+        <div className="section-label">What's Nearby</div>
         <div className="places-grid">
           {nearbyCategories.map(function(item) {
             return (
@@ -206,11 +214,11 @@ function Results({ results }) {
       </div>
 
       {/* Lifestyle Budget Section */}
-      <div className="results-section">
-        <div className="section-label">✦ Your Monthly Budget</div>
+      <div className="results-section" ref={budgetRef}>
+        <div className="section-label">Your Monthly Budget</div>
         {!showQuiz && !budgetData && (
-          <button className="budget-trigger-btn" onClick={() => setShowQuiz(true)}>
-            ✦ See Where Your Money Actually Goes →
+          <button className="budget-trigger-btn" onClick={handleShowQuiz}>
+            See Where Your Money Actually Goes
           </button>
         )}
         {showQuiz && !budgetData && (

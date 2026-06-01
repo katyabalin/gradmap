@@ -80,7 +80,7 @@ function InputForm({ onSubmit, loading }) {
           </div>
         </div>
         <button className="submit-btn" type="submit" disabled={loading || !salary || !city}>
-          {loading ? 'Mapping...' : '✦ Map My Life'}
+          {loading ? 'Mapping...' : 'Map My Life'}
         </button>
       </form>
     </div>

@@ -74,7 +74,7 @@ const handleCompare = async (formData) => {
         {activeTab === 'single' ? (
           <>
             <div className="hero">
-              <div className="hero-label">✦ For New Grads</div>
+              <div className="hero-label">For New Grads</div>
               <h1 className="hero-title">What does your life<br />actually <em>look like?</em></h1>
               <p className="hero-sub">Enter your salary and city. Get a real breakdown of what you can afford, where to live, and what your day-to-day life looks like on that income.</p>
             </div>
@@ -91,7 +91,7 @@ const handleCompare = async (formData) => {
         ) : (
           <>
             <div className="hero">
-              <div className="hero-label">✦ Compare Offers</div>
+              <div className="hero-label">Compare Offers</div>
               <h1 className="hero-title">Which city actually<br /><em>pays more?</em></h1>
               <p className="hero-sub">Enter two job offers in different cities. See which one gives you more money, a better lifestyle, and the right neighborhood for you.</p>
             </div>

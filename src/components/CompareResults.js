@@ -55,7 +55,7 @@ function CityColumn({ data, label }) {
         <MiniPayCard label="After Everything" value={'$' + takeHome.leftAfterEverything.toLocaleString() + '/mo'} />
       </div>
 
-      <div className="tax-section-label">✦ Tax & Cost Breakdown</div>
+      <div className="tax-section-label">Tax & Cost Breakdown</div>
       <div className="tax-grid">
         <TaxCard label="Federal Tax" value="22%" />
         <TaxCard label="State Income Tax" value={stateRate} highlight={noStateTax} />
@@ -126,7 +126,6 @@ Write 3-4 sentences explaining which offer is better financially and exactly why
     <div className="compare-results">
 
       <div className="winner-banner">
-        <div className="winner-trophy">🏆</div>
         <div>
           <div className="winner-title">{winnerLabel} wins on affordability</div>
           <div className="winner-sub">
@@ -137,13 +136,13 @@ Write 3-4 sentences explaining which offer is better financially and exactly why
 
       {!aiAnalysis && (
         <button className="ai-analysis-btn" onClick={handleGetAnalysis} disabled={aiLoading}>
-          {aiLoading ? 'Analyzing...' : '✦ Get AI Analysis — Why Does ' + winnerLabel + ' Win?'}
+          {aiLoading ? 'Analyzing...' : 'Get AI Analysis — Why Does ' + winnerLabel + ' Win?'}
         </button>
       )}
 
       {aiAnalysis && (
         <div className="comparison-ai-box">
-          <div className="comparison-ai-label">✦ Why {winnerLabel} Wins</div>
+          <div className="comparison-ai-label">Why {winnerLabel} Wins</div>
           <div className="comparison-ai-text">{aiAnalysis}</div>
         </div>
       )}
