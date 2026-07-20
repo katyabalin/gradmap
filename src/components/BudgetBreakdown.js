@@ -18,7 +18,7 @@ function BudgetBreakdown({ data, city, takeHome }) {
           return (
             <div key={cat.name} className="budget-cat">
               <div className="budget-cat-header">
-                <div className="budget-cat-name">{cat.emoji} {cat.name}</div>
+                <div className="budget-cat-name">{cat.name}</div>
                 <div className="budget-cat-range">${cat.low}–${cat.high}/mo</div>
               </div>
               <div className="budget-bar-wrap">

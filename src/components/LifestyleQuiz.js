@@ -4,27 +4,27 @@ import './LifestyleQuiz.css';
 const QUESTIONS = [
   {
     id: 'going_out',
-    label: '🍸 Going out',
+    label: 'Going out',
     options: ['Rarely', 'Sometimes', 'A lot'],
   },
   {
     id: 'fitness',
-    label: '💪 Fitness',
+    label: 'Fitness',
     options: ['Not really', 'Gym membership', 'Boutique classes'],
   },
   {
     id: 'shopping',
-    label: '🛍 Shopping',
+    label: 'Shopping',
     options: ['Minimal', 'Moderate', 'Heavy'],
   },
   {
     id: 'food',
-    label: '🍽 Food',
+    label: 'Food',
     options: ['Mostly cook', 'Mix', 'Mostly eat out'],
   },
   {
     id: 'transport',
-    label: '🚇 Transport',
+    label: 'Transport',
     options: ['Public transit', 'Rideshare sometimes', 'Car / Uber often'],
   },
 ];
@@ -63,13 +63,13 @@ Their lifestyle preferences:
 Return ONLY a valid JSON object with NO markdown, backticks, or explanation:
 {
   "categories": [
-    { "name": "Groceries & Cooking", "emoji": "🥦", "low": 200, "high": 400, "tip": "one specific money-saving tip for this city" },
-    { "name": "Eating Out", "emoji": "🍜", "low": 150, "high": 600, "tip": "one specific tip" },
-    { "name": "Going Out & Fun", "emoji": "🎉", "low": 100, "high": 500, "tip": "one specific tip" },
-    { "name": "Fitness", "emoji": "💪", "low": 0, "high": 200, "tip": "one specific tip" },
-    { "name": "Shopping & Clothes", "emoji": "🛍", "low": 50, "high": 400, "tip": "one specific tip" },
-    { "name": "Transport", "emoji": "🚇", "low": 50, "high": 300, "tip": "one specific tip" },
-    { "name": "Subscriptions & Misc", "emoji": "📱", "low": 50, "high": 150, "tip": "one specific tip" }
+    { "name": "Groceries & Cooking", "low": 200, "high": 400, "tip": "one specific money-saving tip for this city" },
+    { "name": "Eating Out", "low": 150, "high": 600, "tip": "one specific tip" },
+    { "name": "Going Out & Fun", "low": 100, "high": 500, "tip": "one specific tip" },
+    { "name": "Fitness", "low": 0, "high": 200, "tip": "one specific tip" },
+    { "name": "Shopping & Clothes", "low": 50, "high": 400, "tip": "one specific tip" },
+    { "name": "Transport", "low": 50, "high": 300, "tip": "one specific tip" },
+    { "name": "Subscriptions & Misc", "low": 50, "high": 150, "tip": "one specific tip" }
   ],
   "total_low": 600,
   "total_high": 2550,

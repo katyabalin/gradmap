@@ -198,6 +198,14 @@ Return exactly 3 neighborhoods. Make sure rentRange fits within or slightly abov
     });
     if (!res.ok) return null;
     const data = await res.json();
+    try {
+      supabase.from('ai_usage').insert({
+        event_type: 'single_search',
+        city,
+        input_tokens: data.usage?.input_tokens ?? null,
+        output_tokens: data.usage?.output_tokens ?? null,
+      }).then(() => {});
+    } catch {}
     return JSON.parse(data.text);
   } catch {
     return null;
@@ -319,18 +327,23 @@ Write a 3-4 sentence explanation of which offer is better and exactly why. Be sp
     if (!res.ok) return null;
     const data = await res.json();
 
-
-
     supabase.from('events').insert({
-  event_type: 'comparison',
-  city_a: cityA,
-  city_b: cityB,
-  salary: salaryA,
-  vibe: null,
-  age: null,
-}).then(() => {});
+      event_type: 'comparison',
+      city_a: cityA,
+      city_b: cityB,
+      salary: salaryA,
+      vibe: null,
+      age: null,
+    }).then(() => {});
 
-
+    try {
+      supabase.from('ai_usage').insert({
+        event_type: 'comparison',
+        city: cityA + ' / ' + cityB,
+        input_tokens: data.usage?.input_tokens ?? null,
+        output_tokens: data.usage?.output_tokens ?? null,
+      }).then(() => {});
+    } catch {}
 
     return data.text;
   } catch {

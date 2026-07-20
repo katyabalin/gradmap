@@ -44,29 +44,29 @@ function Results({ results }) {
 
   const nearbyCategories = [
     {
-      label: '🍜 Restaurants',
+      label: 'Restaurants',
       search: age < 30 ? 'trendy restaurants ' + city.split(',')[0] : 'best restaurants ' + city.split(',')[0],
       maps: 'restaurants in ' + city
     },
     {
-      label: '☕ Cafes',
+      label: 'Cafes',
       search: age < 25 ? 'aesthetic cafes ' + city.split(',')[0] : age < 35 ? 'work-friendly coffee shops ' + city.split(',')[0] : 'cozy cafes ' + city.split(',')[0],
       maps: 'coffee shops in ' + city
     },
     {
-      label: '💪 Gyms',
+      label: 'Gyms',
       search: vibe === 'Fitness & Wellness' ? 'pilates yoga studios ' + city.split(',')[0] : 'gyms ' + city.split(',')[0],
       maps: 'gyms in ' + city
     },
-    { label: '🌳 Parks', search: 'parks ' + city.split(',')[0], maps: 'parks in ' + city },
-    { label: '🛒 Grocery', search: 'grocery stores ' + city.split(',')[0], maps: 'grocery stores in ' + city },
+    { label: 'Parks', search: 'parks ' + city.split(',')[0], maps: 'parks in ' + city },
+    { label: 'Grocery', search: 'grocery stores ' + city.split(',')[0], maps: 'grocery stores in ' + city },
     {
-      label: '🎉 Nightlife',
+      label: 'Nightlife',
       search: age < 25 ? 'bars clubs ' + city.split(',')[0] : 'wine bars cocktail bars ' + city.split(',')[0],
       maps: 'bars nightlife in ' + city
     },
-    { label: '🏥 Healthcare', search: 'urgent care ' + city.split(',')[0], maps: 'urgent care clinics in ' + city },
-    { label: '🚇 Transit', search: 'public transit ' + city.split(',')[0], maps: 'public transit ' + city },
+    { label: 'Healthcare', search: 'urgent care ' + city.split(',')[0], maps: 'urgent care clinics in ' + city },
+    { label: 'Transit', search: 'public transit ' + city.split(',')[0], maps: 'public transit ' + city },
   ];
 
   return (
@@ -151,7 +151,7 @@ function Results({ results }) {
           {/* Meetup link */}
           <a className="meetup-link" href={({'New York, NY': 'https://www.meetup.com/cities/us/ny/new_york/', 'San Francisco, CA': 'https://www.meetup.com/cities/us/ca/san_francisco/', 'Los Angeles, CA': 'https://www.meetup.com/cities/us/ca/los_angeles/', 'Chicago, IL': 'https://www.meetup.com/cities/us/il/chicago/', 'Seattle, WA': 'https://www.meetup.com/cities/us/wa/seattle/', 'Austin, TX': 'https://www.meetup.com/cities/us/tx/austin/', 'Boston, MA': 'https://www.meetup.com/cities/us/ma/boston/', 'Washington, DC': 'https://www.meetup.com/cities/us/dc/washington/', 'Miami, FL': 'https://www.meetup.com/cities/us/fl/miami/', 'Denver, CO': 'https://www.meetup.com/cities/us/co/denver/', 'Atlanta, GA': 'https://www.meetup.com/cities/us/ga/atlanta/', 'Nashville, TN': 'https://www.meetup.com/cities/us/tn/nashville/'})[city] || 'https://www.meetup.com/find/'} target="_blank" rel="noreferrer">
             <div className="meetup-left">
-              <div className="meetup-title">🎉 Find Your Community</div>
+              <div className="meetup-title">Find Your Community</div>
               <div className="meetup-desc">Browse local meetups, events, and groups for new residents in {city}</div>
             </div>
             <div className="meetup-arrow">&#8594;</div>
