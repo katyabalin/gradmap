@@ -18,6 +18,12 @@ function Header({ activeTab, onTabChange }) {
         >
           Compare Cities
         </button>
+        <button
+          className={'header-tab' + (activeTab === 'jobs' ? ' header-tab-active' : '')}
+          onClick={() => onTabChange('jobs')}
+        >
+          Job Search
+        </button>
       </div>
       <div className="header-right">
         <a href="/case-study" className="header-case-link">Case Study</a>

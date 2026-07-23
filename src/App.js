@@ -7,6 +7,7 @@ import CompareForm from './components/CompareForm';
 import CompareResults from './components/CompareResults';
 import { analyzeCity } from './utils/api';
 import GradMapCaseStudy from './components/GradMapCaseStudy';
+import JobSearch from './components/JobSearch';
 
 function App() {
   const [activeTab, setActiveTab] = useState('single');
@@ -60,6 +61,17 @@ const handleCompare = async (formData) => {
     setError('');
     setCompareError('');
   };
+
+  if (activeTab === 'jobs') {
+    return (
+      <div className="app">
+        <Header activeTab={activeTab} onTabChange={handleTabChange} />
+        <main className="main">
+          <JobSearch />
+        </main>
+      </div>
+    );
+  }
 
   if (window.location.pathname === '/case-study') {
     return <GradMapCaseStudy />;
