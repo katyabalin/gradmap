@@ -103,7 +103,8 @@ function JobSearch() {
     setError('');
     setJobs(null);
     try {
-      const res = await fetch('/api/jobs', {
+      const API_URL = process.env.REACT_APP_API_URL || '';
+      const res = await fetch(`${API_URL}/jobs`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ role, cities: selectedCities }),

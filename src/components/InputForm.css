@@ -17,6 +17,8 @@
 @media (max-width: 480px) { .form-row { grid-template-columns: 1fr; } }
 
 .form-group { display: flex; flex-direction: column; gap: 8px; }
+.form-group-full { margin-bottom: 16px; }
+.form-label-optional { font-weight: 400; color: #94A3B8; font-size: 11px; margin-left: 6px; }
 
 .form-label {
   font-family: 'Inter', sans-serif;

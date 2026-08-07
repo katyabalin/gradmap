@@ -26,11 +26,12 @@ function InputForm({ onSubmit, loading }) {
   const [city, setCity] = useState('');
   const [vibe, setVibe] = useState('');
   const [age, setAge] = useState('');
+  const [officeAddress, setOfficeAddress] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!salary || !city) return;
-    onSubmit({ salary: parseInt(salary), city, vibe, age: parseInt(age) || 25 });
+    onSubmit({ salary: parseInt(salary), city, vibe, age: parseInt(age) || 25, officeAddress: officeAddress.trim() || null });
   };
 
   return (
@@ -78,6 +79,16 @@ function InputForm({ onSubmit, loading }) {
               {VIBES.map(v => <option key={v} value={v}>{v}</option>)}
             </select>
           </div>
+        </div>
+        <div className="form-group form-group-full">
+          <label className="form-label">Office Address <span className="form-label-optional">(optional — adds real commute times)</span></label>
+          <input
+            className="form-input form-input-standalone"
+            type="text"
+            placeholder="e.g. 350 5th Ave, New York, NY"
+            value={officeAddress}
+            onChange={e => setOfficeAddress(e.target.value)}
+          />
         </div>
         <button className="submit-btn" type="submit" disabled={loading || !salary || !city}>
           {loading ? 'Mapping...' : 'Map My Life'}

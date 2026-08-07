@@ -4,13 +4,42 @@ import LifestyleQuiz from './LifestyleQuiz';
 import BudgetBreakdown from './BudgetBreakdown';
 
 function Results({ results }) {
-  const { salary, city, takeHome, summary, cityStats, age, vibe } = results;
+  const { salary, city, takeHome, summary, neighborhoods, cityStats, age, vibe } = results;
   const citySlug = city.split(',')[0].toLowerCase().replace(/ /g, '-');
   const stateSlug = (city.split(', ')[1] || '').toLowerCase();
 
   const [showQuiz, setShowQuiz] = useState(false);
   const [budgetData, setBudgetData] = useState(null);
   const budgetRef = useRef(null);
+  const [emailInput, setEmailInput] = useState('');
+  const [emailStatus, setEmailStatus] = useState('idle'); // idle | sending | sent | error
+  const [emailError, setEmailError] = useState('');
+
+  const handleSendEmail = async () => {
+    if (!emailInput) return;
+    setEmailStatus('sending');
+    setEmailError('');
+    try {
+      const API_URL = process.env.REACT_APP_API_URL || '';
+      const res = await fetch(`${API_URL}/email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          summary,
+          neighborhoods: results.neighborhoods || [],
+          city,
+          salary,
+          userEmail: emailInput,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Failed to send');
+      setEmailStatus('sent');
+    } catch (e) {
+      setEmailStatus('error');
+      setEmailError(e.message);
+    }
+  };
 
   const handleShowQuiz = () => {
     setShowQuiz(true);
@@ -170,6 +199,37 @@ function Results({ results }) {
         </div>
       )}
 
+      {/* Neighborhoods */}
+      {neighborhoods && neighborhoods.length > 0 && (
+        <div className="results-section">
+          <div className="section-label">Recommended Neighborhoods</div>
+          <div className="neighborhoods-list">
+            {neighborhoods.map((n, i) => (
+              <div key={i} className={'neighborhood-card' + (i === 0 ? ' neighborhood-card-top' : '')}>
+                <div className="neighborhood-header">
+                  <div>
+                    <div className="neighborhood-name">{n.name}{n.borough ? <span className="neighborhood-borough"> · {n.borough}</span> : ''}</div>
+                    <div className="neighborhood-vibe">{n.vibe}</div>
+                  </div>
+                  <div className="neighborhood-right">
+                    <div className="neighborhood-rent">{n.rentRange}</div>
+                    {n.commuteTime && (
+                      <div className="neighborhood-commute">{n.commuteTime}</div>
+                    )}
+                  </div>
+                </div>
+                <div className="neighborhood-pros">
+                  {(n.pros || []).map((pro, j) => (
+                    <span key={j} className="neighborhood-pro">{pro}</span>
+                  ))}
+                </div>
+                {n.warning && <div className="neighborhood-warning">{n.warning}</div>}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Find Apartments */}
       <div className="results-section">
         <div className="section-label">Find Apartments</div>
@@ -233,6 +293,37 @@ function Results({ results }) {
         )}
         {budgetData && (
           <BudgetBreakdown data={budgetData} city={city} takeHome={takeHome} />
+        )}
+      </div>
+
+      {/* Email Results */}
+      <div className="results-section">
+        <div className="section-label">Email These Results</div>
+        {emailStatus === 'sent' ? (
+          <div className="email-sent">Results sent to {emailInput}</div>
+        ) : (
+          <div className="email-box">
+            <p className="email-desc">Get a summary of your {city} results delivered to your inbox.</p>
+            <div className="email-row">
+              <input
+                className="email-input"
+                type="email"
+                placeholder="your@email.com"
+                value={emailInput}
+                onChange={e => setEmailInput(e.target.value)}
+              />
+              <button
+                className="email-btn"
+                onClick={handleSendEmail}
+                disabled={emailStatus === 'sending' || !emailInput}
+              >
+                {emailStatus === 'sending' ? 'Sending...' : 'Send'}
+              </button>
+            </div>
+            {emailStatus === 'error' && (
+              <div className="email-error">{emailError}</div>
+            )}
+          </div>
         )}
       </div>
 

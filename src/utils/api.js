@@ -3,6 +3,8 @@
 
 import { createClient } from '@supabase/supabase-js';
 
+const API_URL = process.env.REACT_APP_API_URL || '';
+
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL,
   process.env.REACT_APP_SUPABASE_ANON_KEY
@@ -38,10 +40,10 @@ export async function getCityStats(city) {
   const censusUrl = `https://api.census.gov/data/2022/acs/acs5?get=B01003_001E,B01002_001E,B02001_002E,B02001_003E,B02001_004E,B02001_005E,B02001_006E,B03003_003E,B01001_007E,B01001_008E,B01001_009E,B01001_010E,B01001_011E,B01001_012E,B01001_031E,B01001_032E,B01001_033E,B01001_034E,B01001_035E,B01001_036E&for=place:${location.place}&in=state:${location.state}&key=${CENSUS_KEY}`;
 
   try {
-    const res = await fetch('/api/analyze', {
+    const res = await fetch(`${API_URL}/census`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type: 'census', censusUrl }),
+      body: JSON.stringify({ censusUrl }),
     });
     if (!res.ok) return null;
     const json = await res.json();
@@ -165,7 +167,14 @@ export async function getRentals(city, maxRent) {
   }
 }
 
-async function generateAISummary(salary, city, vibe, takeHome, age) {
+async function generateAISummary(salary, city, vibe, takeHome, age, officeAddress) {
+  const commuteField = officeAddress
+    ? `      "commuteTime": "e.g. 22 min by transit",`
+    : '';
+  const commuteInstruction = officeAddress
+    ? `The user's office is at: ${officeAddress}. For each recommended neighborhood, call the get_commute_time tool with origin set to "{neighborhood}, ${city}" and destination set to "${officeAddress}". Put the result in the commuteTime field.`
+    : '';
+
   const prompt = `You are a helpful advisor for new college graduates figuring out where to live.
 
 Someone is moving to ${city} with a $${salary.toLocaleString()} annual salary.
@@ -173,6 +182,7 @@ They are ${age || 25} years old.
 Their monthly take-home pay is $${takeHome.monthly.toLocaleString()}.
 Their max recommended rent is $${takeHome.maxRent.toLocaleString()}/month (30% rule).
 ${vibe ? `They want a ${vibe} neighborhood vibe.` : ''}
+${commuteInstruction}
 
 Respond with ONLY a valid JSON object, no markdown, no backticks, no explanation. Use this exact format:
 {
@@ -183,6 +193,7 @@ Respond with ONLY a valid JSON object, no markdown, no backticks, no explanation
       "borough": "Borough or area name if applicable, otherwise empty string",
       "vibe": "One sentence description of the neighborhood vibe",
       "rentRange": "$X,XXX–$X,XXX",
+${commuteField}
       "pros": ["pro 1", "pro 2", "pro 3"],
       "warning": "One honest heads up about this neighborhood"
     }
@@ -191,10 +202,10 @@ Respond with ONLY a valid JSON object, no markdown, no backticks, no explanation
 
 Return exactly 3 neighborhoods. Make sure rentRange fits within or slightly above their $${takeHome.maxRent.toLocaleString()} budget. Be specific to ${city} and relevant to a ${age || 25} year old.`;
   try {
-    const res = await fetch('/api/analyze', {
+    const res = await fetch(`${API_URL}/analyze`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt }),
+      body: JSON.stringify({ prompt, officeAddress: officeAddress || null }),
     });
     if (!res.ok) return null;
     const data = await res.json();
@@ -319,7 +330,7 @@ Offer B: $${salaryB.toLocaleString()} in ${cityB}
 Write a 3-4 sentence explanation of which offer is better and exactly why. Be specific about taxes, rent differences, and cost of living. Sound like a smart friend explaining it simply. End with one sentence about what kind of person would prefer the other city anyway (career growth, lifestyle, etc).`;
 
   try {
-    const res = await fetch('/api/analyze', {
+    const res = await fetch(`${API_URL}/analyze`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ prompt }),
@@ -353,11 +364,11 @@ Write a 3-4 sentence explanation of which offer is better and exactly why. Be sp
 
 
 // Main function
-export async function analyzeCity({ salary, city, vibe, age }) {
+export async function analyzeCity({ salary, city, vibe, age, officeAddress }) {
   const takeHome = calculateTakeHome(salary, city);
 
   const [aiResult, cityStats] = await Promise.all([
-    generateAISummary(salary, city, vibe, takeHome, age),
+    generateAISummary(salary, city, vibe, takeHome, age, officeAddress),
     getCityStats(city),
   ]);
 
