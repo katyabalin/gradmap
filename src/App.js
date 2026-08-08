@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import Header from './components/Header';
 import InputForm from './components/InputForm';
@@ -8,9 +8,33 @@ import CompareResults from './components/CompareResults';
 import { analyzeCity } from './utils/api';
 import GradMapCaseStudy from './components/GradMapCaseStudy';
 import JobSearch from './components/JobSearch';
+import InboxScan from './components/InboxScan';
 
 function App() {
   const [activeTab, setActiveTab] = useState('single');
+  const [inboxToken, setInboxToken] = useState(null);
+  const [inboxError, setInboxError] = useState('');
+
+  // Pick up OAuth token or error dropped into URL by the backend callback
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('inbox_token');
+    const err = params.get('inbox_error');
+    if (token || err) {
+      const clean = new URL(window.location.href);
+      clean.searchParams.delete('inbox_token');
+      clean.searchParams.delete('inbox_error');
+      window.history.replaceState({}, '', clean.toString());
+    }
+    if (token) {
+      setInboxToken(token);
+      setActiveTab('inbox');
+    }
+    if (err) {
+      setInboxError(decodeURIComponent(err));
+      setActiveTab('inbox');
+    }
+  }, []);
 
   // Single city state
   const [results, setResults] = useState(null);
@@ -68,6 +92,17 @@ const handleCompare = async (formData) => {
         <Header activeTab={activeTab} onTabChange={handleTabChange} />
         <main className="main">
           <JobSearch />
+        </main>
+      </div>
+    );
+  }
+
+  if (activeTab === 'inbox') {
+    return (
+      <div className="app">
+        <Header activeTab={activeTab} onTabChange={handleTabChange} />
+        <main className="main">
+          <InboxScan accessToken={inboxToken} oauthError={inboxError} />
         </main>
       </div>
     );

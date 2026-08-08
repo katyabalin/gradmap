@@ -1,9 +1,12 @@
 import os
+import re
 import json
+import urllib.parse
 import httpx
 from typing import Optional
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 from anthropic import Anthropic
 from dotenv import load_dotenv
@@ -260,6 +263,276 @@ async def send_email(req: EmailRequest):
         print(f"[DEBUG] Claude MCP error: {type(e).__name__}: {str(e)}")
         print(f"[DEBUG] {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+class InboxScanRequest(BaseModel):
+    access_token: str
+    max_results: int = 50
+
+
+@app.get("/oauth/google")
+async def oauth_google():
+    client_id = os.environ.get("GOOGLE_OAUTH_CLIENT_ID")
+    if not client_id:
+        raise HTTPException(status_code=503, detail="GOOGLE_OAUTH_CLIENT_ID not configured")
+    api_base = os.environ.get("API_BASE_URL", "http://localhost:8000")
+    redirect_uri = f"{api_base}/oauth/callback"
+    params = urllib.parse.urlencode({
+        "client_id": client_id,
+        "redirect_uri": redirect_uri,
+        "response_type": "code",
+        "scope": "https://www.googleapis.com/auth/gmail.readonly",
+        "access_type": "offline",
+        "prompt": "consent",
+    })
+    return {"auth_url": f"https://accounts.google.com/o/oauth2/auth?{params}"}
+
+
+@app.get("/oauth/callback")
+async def oauth_callback(code: str = None, error: str = None):
+    frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:3000")
+    if error or not code:
+        msg = urllib.parse.quote(error or "unknown")
+        return RedirectResponse(f"{frontend_url}?inbox_error={msg}")
+
+    client_id = os.environ.get("GOOGLE_OAUTH_CLIENT_ID")
+    client_secret = os.environ.get("GOOGLE_OAUTH_CLIENT_SECRET")
+    api_base = os.environ.get("API_BASE_URL", "http://localhost:8000")
+    redirect_uri = f"{api_base}/oauth/callback"
+
+    async with httpx.AsyncClient() as client:
+        r = await client.post(
+            "https://oauth2.googleapis.com/token",
+            data={
+                "code": code,
+                "client_id": client_id,
+                "client_secret": client_secret,
+                "redirect_uri": redirect_uri,
+                "grant_type": "authorization_code",
+            },
+        )
+        data = r.json()
+
+    if "error" in data:
+        msg = urllib.parse.quote(data.get("error_description", data["error"]))
+        return RedirectResponse(f"{frontend_url}?inbox_error={msg}")
+
+    token = urllib.parse.quote(data["access_token"])
+    return RedirectResponse(f"{frontend_url}?inbox_token={token}")
+
+
+@app.post("/inbox-scan")
+async def inbox_scan(req: InboxScanRequest):
+    token = req.access_token
+    auth_header = {"Authorization": f"Bearer {token}"}
+
+    # Subject-based search covers the most reliable signal; the body-phrase OR
+    # clause catches confirmations where the subject is generic ("Your submission").
+    # No date filter so it reaches back through the full job-search history.
+    SEARCH_QUERY = (
+        'subject:("thank you for applying" OR "application received" OR '
+        '"application submitted" OR "application confirmation" OR '
+        '"we received your application" OR "your application" OR applied) '
+        'OR ("thank you for applying" OR "we received your application" OR '
+        '"we\'ve received your application" OR "application received" OR '
+        '"application submitted" OR "application confirmation")'
+    )
+    cap = min(req.max_results, 50)
+
+    print(f"[INBOX] Gmail search query: {SEARCH_QUERY}")
+    print(f"[INBOX] Requesting up to {cap} matching messages")
+
+    async with httpx.AsyncClient(timeout=30) as client:
+        r = await client.get(
+            "https://gmail.googleapis.com/gmail/v1/users/me/messages",
+            headers=auth_header,
+            params={"q": SEARCH_QUERY, "maxResults": cap},
+        )
+        print(f"[INBOX] messages list HTTP status: {r.status_code}")
+        if r.status_code == 401:
+            raise HTTPException(status_code=401, detail="Gmail token expired. Please reconnect.")
+        if r.status_code != 200:
+            raise HTTPException(status_code=400, detail=f"Gmail API error {r.status_code}: {r.text[:200]}")
+
+        message_ids = [m["id"] for m in r.json().get("messages", [])]
+        print(f"[INBOX] Gmail returned {len(message_ids)} matching message(s)")
+        if not message_ids:
+            return {"jobs": [], "scanned": 0}
+
+        raw_emails = []
+        for mid in message_ids:
+            mr = await client.get(
+                f"https://gmail.googleapis.com/gmail/v1/users/me/messages/{mid}",
+                headers=auth_header,
+                params={"format": "metadata", "metadataHeaders": ["Subject", "Date", "From"]},
+            )
+            if mr.status_code == 200:
+                raw_emails.append(mr.json())
+
+    def extract_summary(msg):
+        hdrs = {h["name"].lower(): h["value"] for h in msg.get("payload", {}).get("headers", [])}
+        return {
+            "subject": hdrs.get("subject", ""),
+            "date": hdrs.get("date", ""),
+            "from": hdrs.get("from", ""),
+            "snippet": msg.get("snippet", ""),
+        }
+
+    emails = [extract_summary(m) for m in raw_emails]
+    print(f"[INBOX] Fetched metadata for {len(emails)} message(s)")
+    for e in emails[:5]:
+        print(f"[INBOX] Subject: {e['subject'][:80]}")
+
+    SUPPORTED = (
+        "New York NY, San Francisco CA, Los Angeles CA, Chicago IL, Seattle WA, "
+        "Austin TX, Boston MA, Washington DC, Miami FL, Denver CO, Atlanta GA, "
+        "Nashville TN, Raleigh NC"
+    )
+    emails_text = "\n\n".join([
+        f"[{i+1}] From: {e['from']}\nSubject: {e['subject']}\nDate: {e['date']}\nPreview: {e['snippet']}"
+        for i, e in enumerate(emails)
+    ])
+
+    def parse_jobs_from_text(text: str) -> list:
+        try:
+            m = re.search(r'\[.*\]', text, re.DOTALL)
+            return json.loads(m.group()) if m else json.loads(text)
+        except (json.JSONDecodeError, AttributeError):
+            print(f"[INBOX] JSON parse failed on: {text[:300]}")
+            return []
+
+    # ── PASS 1: extraction — no tools, one fast call ──────────────────────────
+    print(f"[INBOX] Pass 1: extracting from {len(emails)} emails (no tool calls)")
+    p1_response = claude.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=8096,
+        messages=[{"role": "user", "content": (
+            f"These are job-search emails. For each one that is clearly related to a job application, extract:\n"
+            f"- company (required)\n"
+            f"- role (required)\n"
+            f"- location: normalize to one of these if it matches: {SUPPORTED}. Otherwise use the raw location or null.\n"
+            f"- salary: if explicitly mentioned, otherwise null\n"
+            f"- source_date: YYYY-MM-DD\n"
+            f"- status: classify as exactly one of these four values based on the email content:\n"
+            f"  'applied'   — initial application confirmation (default if none of the below match)\n"
+            f"  'rejected'  — contains language like 'unfortunately', 'not moving forward', 'regret to inform', 'not selected', 'decided to move forward with other candidates', 'position has been filled'\n"
+            f"  'interview' — contains language like 'next steps', 'schedule an interview', 'phone screen', 'interview request', 'move you forward', 'speak with you'\n"
+            f"  'offer'     — contains language like 'offer', 'congratulations', 'pleased to offer', 'compensation package'\n\n"
+            f"Skip emails not related to job applications. "
+            f"Return only a JSON array. No markdown, no explanation.\n\n"
+            f"Emails:\n{emails_text}"
+        )}],
+    )
+    print(f"[INBOX] Pass 1 stop_reason: {p1_response.stop_reason}")
+    p1_text = next((b.text for b in p1_response.content if hasattr(b, "text")), "[]")
+    print(f"[INBOX] Pass 1 preview: {p1_text[:200]}")
+    jobs = parse_jobs_from_text(p1_text)
+    print(f"[INBOX] Pass 1 extracted {len(jobs)} jobs")
+
+    # ── PASS 2: enrichment — web_search for missing fields, capped ───────────
+    ENRICH_CAP = 8
+    serpapi_key = os.environ.get("SERPAPI_KEY")
+    needs_enrich = [j for j in jobs if not j.get("salary") or not j.get("location")]
+    enrich_targets = needs_enrich[:ENRICH_CAP]
+    skipped_enrich = len(needs_enrich) - len(enrich_targets)
+
+    print(
+        f"[INBOX] Pass 2: {len(enrich_targets)} jobs need enrichment "
+        f"({skipped_enrich} skipped — over cap of {ENRICH_CAP}), "
+        f"serpapi={'yes' if serpapi_key else 'no'}"
+    )
+
+    searches_done = 0
+
+    if enrich_targets and serpapi_key:
+        enrich_items = "\n\n".join([
+            f"[{i}] {j.get('company','?')} — {j.get('role','?')} | "
+            f"location: {j.get('location') or 'unknown'} | salary: {j.get('salary') or 'unknown'}"
+            for i, j in enumerate(enrich_targets)
+        ])
+        enrich_prompt = (
+            f"For each job below, use web_search to find the missing salary range and/or "
+            f"office location. Make at most one search per job. "
+            f"Return a JSON array in the same order with updated salary and location fields only.\n\n"
+            f"Jobs:\n{enrich_items}"
+        )
+        WEB_SEARCH_TOOL = {
+            "name": "web_search",
+            "description": "Search for a company's typical salary range or office location.",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string", "description": "e.g. 'Stripe Software Engineer salary New York 2024'"},
+                },
+                "required": ["query"],
+            },
+        }
+        messages = [{"role": "user", "content": enrich_prompt}]
+
+        while True:
+            p2_response = claude.messages.create(
+                model="claude-sonnet-4-6",
+                max_tokens=4096,
+                tools=[WEB_SEARCH_TOOL],
+                messages=messages,
+            )
+            print(f"[INBOX] Pass 2 stop_reason: {p2_response.stop_reason}, searches_done={searches_done}")
+
+            if p2_response.stop_reason == "end_turn":
+                p2_text = next((b.text for b in p2_response.content if hasattr(b, "text")), "[]")
+                enriched = parse_jobs_from_text(p2_text)
+                # Merge enriched fields back — enrich_targets items are refs into jobs
+                for idx, upd in enumerate(enriched):
+                    if idx < len(enrich_targets):
+                        if upd.get("salary"):
+                            enrich_targets[idx]["salary"] = upd["salary"]
+                        if upd.get("location"):
+                            enrich_targets[idx]["location"] = upd["location"]
+                break
+
+            if p2_response.stop_reason == "tool_use":
+                tool_results = []
+                for block in p2_response.content:
+                    if block.type == "tool_use" and block.name == "web_search":
+                        if searches_done >= ENRICH_CAP:
+                            print(f"[INBOX] Enrichment cap ({ENRICH_CAP}) reached, blocking search")
+                            tool_results.append({
+                                "type": "tool_result",
+                                "tool_use_id": block.id,
+                                "content": "Search limit reached for this request.",
+                            })
+                            continue
+                        searches_done += 1
+                        query = block.input.get("query", "")
+                        print(f"[INBOX] web_search [{searches_done}/{ENRICH_CAP}]: {query}")
+                        try:
+                            async with httpx.AsyncClient(timeout=10) as sc:
+                                sr = await sc.get(
+                                    "https://serpapi.com/search.json",
+                                    params={"engine": "google", "q": query, "num": "3", "api_key": serpapi_key},
+                                )
+                                snippets = [r.get("snippet", "") for r in (sr.json().get("organic_results") or [])[:3]]
+                                result_text = " | ".join(snippets) if snippets else "No results"
+                        except Exception as se:
+                            result_text = f"Search error: {se}"
+                        tool_results.append({
+                            "type": "tool_result",
+                            "tool_use_id": block.id,
+                            "content": result_text,
+                        })
+                messages.append({"role": "assistant", "content": p2_response.content})
+                messages.append({"role": "user", "content": tool_results})
+                continue
+
+            print(f"[INBOX] Pass 2 unexpected stop_reason: {p2_response.stop_reason}")
+            break
+
+    print(
+        f"[INBOX] Done: {len(jobs)} jobs, "
+        f"{searches_done} enrichment searches run, "
+        f"{skipped_enrich} skipped (cap={ENRICH_CAP})"
+    )
+    return {"jobs": jobs, "scanned": len(emails), "enriched": searches_done, "skipped_enrich": skipped_enrich}
 
 
 @app.post("/census")

@@ -24,6 +24,12 @@ function Header({ activeTab, onTabChange }) {
         >
           Job Search
         </button>
+        <button
+          className={'header-tab' + (activeTab === 'inbox' ? ' header-tab-active' : '')}
+          onClick={() => onTabChange('inbox')}
+        >
+          Inbox Scan
+        </button>
       </div>
       <div className="header-right">
         <a href="/case-study" className="header-case-link">Case Study</a>
