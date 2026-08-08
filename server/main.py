@@ -210,7 +210,44 @@ async def send_email(req: EmailRequest):
             }],
             messages=[{"role": "user", "content": prompt}],
         )
+
+        # Log the full response so Render's logs show exactly what Claude did
+        print(f"[EMAIL] stop_reason: {response.stop_reason}")
+        for i, block in enumerate(response.content):
+            block_type = getattr(block, "type", type(block).__name__)
+            print(f"[EMAIL] content[{i}] type={block_type}")
+            if block_type == "text":
+                print(f"[EMAIL] content[{i}] text={getattr(block, 'text', '')[:300]}")
+            elif block_type in ("tool_use", "mcp_tool_use"):
+                print(f"[EMAIL] content[{i}] name={getattr(block, 'name', '?')} input={getattr(block, 'input', '?')}")
+            elif block_type in ("tool_result", "mcp_tool_result"):
+                print(f"[EMAIL] content[{i}] content={getattr(block, 'content', '?')}")
+            else:
+                try:
+                    print(f"[EMAIL] content[{i}] raw={block.model_dump()}")
+                except Exception:
+                    print(f"[EMAIL] content[{i}] raw={block}")
+
+        # Verify Claude actually called a tool — plain text means the MCP connection
+        # succeeded but no Gmail action was taken, which is still a failure for us
+        tool_called = any(
+            getattr(b, "type", "") in ("tool_use", "mcp_tool_use")
+            for b in response.content
+        )
+        if not tool_called:
+            text_preview = next(
+                (getattr(b, "text", "")[:200] for b in response.content if getattr(b, "type", "") == "text"),
+                "(no text block)",
+            )
+            print(f"[EMAIL] FAIL — no tool call found. Claude replied with plain text: {text_preview}")
+            raise HTTPException(
+                status_code=502,
+                detail="Claude did not invoke the Gmail tool — email was not sent. Check Render logs for the full response.",
+            )
+
         return {"sent": True, "to": req.userEmail}
+    except HTTPException:
+        raise
     except Exception as e:
         import traceback
         print(f"[DEBUG] Claude MCP error: {type(e).__name__}: {str(e)}")
