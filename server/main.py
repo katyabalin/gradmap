@@ -196,7 +196,7 @@ async def send_email(req: EmailRequest):
     try:
         response = claude.beta.messages.create(
             model="claude-sonnet-4-6",
-            max_tokens=1000,
+            max_tokens=4096,
             betas=["mcp-client-2025-11-20"],
             mcp_servers=[{
                 "type": "url",
@@ -213,6 +213,13 @@ async def send_email(req: EmailRequest):
 
         # Log the full response so Render's logs show exactly what Claude did
         print(f"[EMAIL] stop_reason: {response.stop_reason}")
+        if response.stop_reason == "max_tokens":
+            print("[EMAIL] FAIL — response truncated (max_tokens). Tool call likely incomplete.")
+            raise HTTPException(
+                status_code=502,
+                detail="Claude's response was truncated before completing the Gmail tool call. Check Render logs.",
+            )
+
         for i, block in enumerate(response.content):
             block_type = getattr(block, "type", type(block).__name__)
             print(f"[EMAIL] content[{i}] type={block_type}")
