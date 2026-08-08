@@ -114,7 +114,7 @@ class JobsRequest(BaseModel):
 
 
 class EmailRequest(BaseModel):
-    summary: str
+    summary: Optional[str] = None
     neighborhoods: list
     city: str
     salary: int
@@ -191,8 +191,8 @@ async def send_email(req: EmailRequest):
         f"of these neighborhood recommendations.\n\n"
         f"City: {req.city}\n"
         f"Salary: ${req.salary:,}\n\n"
-        f"Summary:\n{req.summary}\n\n"
-        f"Neighborhoods:\n{neighborhood_text}\n\n"
+        + (f"Summary:\n{req.summary}\n\n" if req.summary else "")
+        + f"Neighborhoods:\n{neighborhood_text}\n\n"
         f"Format it as a friendly, skimmable email — use short paragraphs and clear sections."
     )
 

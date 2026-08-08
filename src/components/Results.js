@@ -25,7 +25,7 @@ function Results({ results }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          summary,
+          summary: summary || null,
           neighborhoods: results.neighborhoods || [],
           city,
           salary,
@@ -33,7 +33,15 @@ function Results({ results }) {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || 'Failed to send');
+      if (!res.ok) {
+        const detail = data.detail;
+        const msg = typeof detail === 'string'
+          ? detail
+          : Array.isArray(detail)
+            ? detail.map(e => e.msg || JSON.stringify(e)).join('; ')
+            : 'Failed to send email';
+        throw new Error(msg);
+      }
       setEmailStatus('sent');
     } catch (e) {
       setEmailStatus('error');
