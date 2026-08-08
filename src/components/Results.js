@@ -26,7 +26,7 @@ function Results({ results }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           summary: summary || null,
-          neighborhoods: results.neighborhoods || [],
+          neighborhoods: neighborhoods || [],
           city,
           salary,
           userEmail: emailInput,
@@ -309,6 +309,12 @@ function Results({ results }) {
         <div className="section-label">Email These Results</div>
         {emailStatus === 'sent' ? (
           <div className="email-sent">Results sent to {emailInput}</div>
+        ) : !neighborhoods || neighborhoods.length === 0 ? (
+          <div className="email-box">
+            <p className="email-desc" style={{ color: '#94A3B8' }}>
+              Neighborhood data is unavailable — re-run the analysis to enable email.
+            </p>
+          </div>
         ) : (
           <div className="email-box">
             <p className="email-desc">Get a summary of your {city} results delivered to your inbox.</p>

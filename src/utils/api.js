@@ -217,7 +217,10 @@ Return exactly 3 neighborhoods. Make sure rentRange fits within or slightly abov
         output_tokens: data.usage?.output_tokens ?? null,
       }).then(() => {});
     } catch {}
-    return JSON.parse(data.text);
+    // Extract JSON even if Claude wraps it in extra text or markdown
+    const raw = data.text || '';
+    const match = raw.match(/\{[\s\S]*\}/);
+    return JSON.parse(match ? match[0] : raw);
   } catch {
     return null;
   }
